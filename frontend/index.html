@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de productos</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <!-- <script src="./js/components/ProductCard.js"></script> -->
+    <script type="module" src="./js/main.js"></script>
+</head>
+
+<body>
+
+    <div class="titles">
+        <h1>El mejor buscador y comparador de precios de supermercados</h1>
+        <h2>Encontrá productos de los siguientes súpers: <span class="titles__supermarkets"></span></h2>
+    </div>
+
+    <nav class="navbar">
+        <form action="" method="GET">
+            <input type="search" name="q" placeholder="Buscar..." class="navbar__input">
+            <button type="submit" class="navbar__submit">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-search">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                    <path d="M21 21l-6 -6" />
+                </svg>
+            </button>
+        </form>
+    </nav>
+
+    <section class="search__filters">
+        <p><span id="amt-products-found">0</span> productos encontrados</p>
+        <div class="search__filters--sort">
+            <span>Ordenar por</span>
+            <select name="select-sort">
+                <option value="OrderByNameASC">Nombre A-Z</option>
+                <option value="OrderByNameDESC">Nombre Z-A</option>
+                <option value="OrderByPriceASC" selected>Precio más bajo</option>
+                <option value="OrderByPriceDESC">Precio más alto</option>
+            </select>
+        </div>
+    </section>
+    <main class="products"></main>
+
+    <!-- Agregar botón para volver hacia arriba del todo -->
+</body>
+
+</html>

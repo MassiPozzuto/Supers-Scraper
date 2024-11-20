@@ -1,0 +1,7 @@
+# Ignorar entornos virtuales
+api/.venv/
+
+# Archivos de caché
+api/__pycache__/
+scrapers/__pycache__/
+*.pyc

@@ -2,9 +2,14 @@
 
 Este proyecto consta de tres partes.
 
-    1. Scrapers: Dos scripts de python los cuales, uno extrae los datos de los productos del supermercado Coto y el otro extrae los datos de los supermercados Cencosud (Jumbo, Disco, Vea). Ambos guardan los datos en una base de datos MySQL
-    2. Api: Hecha en python, utilizando FastAPI, su función es devolver los datos recolectados por los scrapers y solicitados por la pagina.
-    3. Pagina: Es un simple frontend que utiliza HTML, CSS y JavaScript. El usuario realiza determinada busqueda y se le devolverá los productos que matcheen con la misma.
+#### Scrapers
+Dos scripts de python los cuales, uno extrae los datos de los productos del supermercado Coto y el otro extrae los datos de los supermercados Cencosud (Jumbo, Disco, Vea). Ambos guardan los datos en una base de datos MySQL
+
+#### API
+Hecha en python, utilizando FastAPI, su función es devolver los datos recolectados por los scrapers y solicitados por la pagina.
+
+#### Página
+Es un simple frontend que utiliza HTML, CSS y JavaScript. El usuario realiza determinada busqueda y se le devolverá los productos que matcheen con la misma.
 
 ## Requisitos
 

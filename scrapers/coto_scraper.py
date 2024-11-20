@@ -5,16 +5,17 @@ import mysql.connector
 from lxml import html
 
 AMOUNT_PRODUCTS = 100
-
+PROXIES = []
 # socks5://<user>:<pass>@<ip>:<port>
-PROXIES = [
-  "socks5://14a596aa03cf7:16415a7002@200.26.190.84:12324",
-  "socks5://14a596aa03cf7:16415a7002@23.26.52.168:12324",
-  "socks5://14a596aa03cf7:16415a7002@64.40.148.245:12324",
-  "socks5://14a596aa03cf7:16415a7002@136.175.227.96:12324",
-  "socks5://14a596aa03cf7:16415a7002@194.147.220.211:12324",
-  None # Mi IP
-]
+def obtainsProxies():
+  global PROXIES
+  with open("proxies.txt", "r") as archivo:
+      proxiesLines = archivo.readlines()
+
+  # Remover el carácter de salto de línea (\n) al final de cada item
+  PROXIES = [proxyLine.strip() for proxyLine in proxiesLines]
+  PROXIES.append(None)
+
 
 
 def priceToNumber(price):
@@ -99,6 +100,7 @@ def get_coto_products(page = 1):
 
 
 if __name__ == '__main__':
+  obtainsProxies()
   coto_products = get_coto_products()
   print('Cantidad de productos totales:', len(coto_products))
   #coto_products = remove_duplicate_products(coto_products)

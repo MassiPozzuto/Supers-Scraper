@@ -29,7 +29,7 @@ También tendrán que instalar todas las librerias mencionadas en `requirements.
 
 Para extraer los datos de coto utilizo la librerias requests y lxml.
 
-Para que este script funcione, hay un paso más. Deberán modificar el archivo `proxies.txt`, en este tendrán que colocar todos los proxies que vayan a utilizar (uno por linea), pueden ser SOCKS o HTTP, en el formato: `<Protocol>://<user>:<pass>@<ip>:<port>`. ¿Por qué proxies? Son necesarios ya que este supermercado bloquea nuestra IP si realizamos muchas consultas desde la misma en poco tiempo. En mi caso utilizo 5 proxies (sumado mi IP) y, para que funcione, entre cada consulta hay un sleep de 120 segundos; si tienen más proxies o un proxy que rote sus IPs, este número variará, es cuestión de probar.
+Para que este script funcione, hay un paso más. Deberán crear el archivo `proxies.txt`, en este tendrán que colocar todos los proxies que vayan a utilizar (uno por linea), pueden ser SOCKS o HTTP, en el formato: `<Protocol>://<user>:<pass>@<ip>:<port>`. ¿Por qué proxies? Son necesarios ya que este supermercado bloquea nuestra IP si realizamos muchas consultas desde la misma en poco tiempo. En mi caso utilizo 5 proxies (sumado mi IP) y, para que funcione, entre cada consulta hay un sleep de 120 segundos; si tienen más proxies o un proxy que rote sus IPs, este número variará, es cuestión de probar.
 
 Con esto listo, podrán ejecutar el script y al cabo de cierto tiempo habrán obtenido y guardado en la BD todos los productos de Coto.
 

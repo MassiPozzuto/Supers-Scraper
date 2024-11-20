@@ -1,0 +1,1 @@
+Aquí ingresar sus proxies ya sean SOCKS o HTTP, respetando el siguiente formato: <Protocol>://<user>:<pass>@<ip>:<port>, uno por linea

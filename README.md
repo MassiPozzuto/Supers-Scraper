@@ -41,7 +41,7 @@ Antes de ejecutarlo, deberán definir el supermercado cencosud a scrapear (Vea, 
 
 ## Modo de uso - Api
 
-Para la api, como ya comenté, use [FastAPI](https://fastapi.tiangolo.com/). Evidentemente, antes de poder ejecutarla tendrán que instalar los requirements, para esto es recomendable crear un entorno virtual. 
+Para la api, como ya comenté, use [FastAPI](https://fastapi.tiangolo.com/). Evidentemente, antes de poder ejecutarla tendrán que instalar los requirements, para esto es recomendable [crear un entorno virtual](https://docs.python.org/es/3/tutorial/venv.html). 
 
 Ingresando el comando `fastapi dev main.py` en la terminal, se iniciará el programa y comenzará a escuchar las solicitudes.
 

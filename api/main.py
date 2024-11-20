@@ -48,6 +48,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 app = FastAPI()
 
+
 # Permitir CORS desde cualquier origen (esto puede ajustarse según sea necesario)
 app.add_middleware(
     CORSMiddleware,

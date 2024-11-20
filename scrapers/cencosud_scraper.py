@@ -11,7 +11,7 @@ from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 
 
 AMOUNT_PRODUCTS = 20
-SUPERMARKET_NAME = 'Vea'
+SUPERMARKET_NAME = 'Vea' # Cambiar según el supermercado cencosud que se quiera scrapear
 
 
 def priceToNumber(price):
@@ -50,8 +50,7 @@ def get_super_cencosud_categories(driver, url):
   menuItems = driver.find_elements(By.XPATH, "//nav/ul/li//li/div/a")
   for menuItem in menuItems:
     category = menuItem.get_attribute("href")
-    if category != f"{url}/cyber-monday-electro":
-      categories.append(category.replace(url, ''))
+    categories.append(category.replace(url, ''))
 
   return categories
 
@@ -72,8 +71,10 @@ def get_cencosud_products(driver, url_base, url_category, page = 1):
   products_scraped = []
   total_products = driver.find_element(By.CLASS_NAME, 'vtex-search-result-3-x-totalProducts--layout').text
   total_products = extract_amount_products(total_products)
-  if page == 1 and total_products > 1000:
-    # Recorrer subcategorias
+  
+  if page == 1 and total_products > (AMOUNT_PRODUCTS * 50):
+    # Como estos supermercados solo paginan hatsa 50 páginas, de 20 productos cada una. Si una categoria tiene más de 1000 productos, nunca podriamos obtener todos ya que la #
+    # paginación nos limita. Por eso, tengo que recorrer sus subcategorias recursivamente y obtener los productos de ellas.
     type_category = len(url_category.split('/')) # 2 = categoria. 3 = subcategoria
 
     view_more_button = driver.find_elements(By.XPATH, f"//div[contains(@class, 'vtex-search-result-3-x-filter__container--category-{type_category}')]/div[2]//button")
@@ -89,14 +90,14 @@ def get_cencosud_products(driver, url_base, url_category, page = 1):
       ActionChains(driver).scroll_from_origin(ScrollOrigin.from_element(container_subcategories), 0, 100).perform()
       time.sleep(0.5)
 
-    subcategories_elements = driver.find_elements(By.XPATH, f"//div[contains(@class, 'vtex-search-result-3-x-filter__container--category-{type_category}')]//div[contains(@class, 'vtex-search-result-3-x-filterItem')]") # Al ser varios (find_elements), /@alt, no funciona, debo recorrerlosy obtener el alt individualmente
+    subcategories_elements = driver.find_elements(By.XPATH, f"//div[contains(@class, 'vtex-search-result-3-x-filter__container--category-{type_category}')]//div[contains(@class, 'vtex-search-result-3-x-filterItem')]") # Al ser varios (find_elements), /@alt, no funciona, debo recorrerlos y obtener el alt individualmente
     url_subcategories = []
     for subcategory_element in subcategories_elements:
       subcategory_name = subcategory_element.get_attribute('alt')
-      url_subcategories.append(re.sub(r'[,\s]+', '-', subcategory_name)) # Reemplazo ',' y ' ' por '-'
+      url_subcategories.append(re.sub(r'[,\s]+', '-', subcategory_name)) # Reemplazo comas (',') y espacios (' ') por '-'
     print(url_subcategories)
 
-    # Tengo que hacerlos en distintos for, ya que get_cencosud_products() cambia el url, por lo tanto, en la nueva url, no existen los elementos de subcategories_elements y no puedo obtener su atributo alt
+    # Tengo que hacerlos en distintos for, ya que get_cencosud_products() cambia el url, por lo tanto, en la nueva url, no existen los elementos de subcategories_elements y no puedo # obtener su atributo alt
     for url_subcategory in url_subcategories:
       print(f'{url_category}/{url_subcategory}')
       more_products_scraped = get_cencosud_products(driver, url_base, f'{url_category}/{url_subcategory}')

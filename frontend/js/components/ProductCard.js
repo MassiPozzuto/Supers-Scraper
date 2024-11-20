@@ -66,8 +66,13 @@ export class ProductCard extends HTMLElement {
 
                     cursor: pointer;
                 }
-                .product__info--name:hover {
+                .product__info--name:hover > ::slotted(h4) {
                     text-decoration: underline;
+                    max-height: 75px;
+                    display: -webkit-box;        /* Requerido para usar el truncado multilineal */
+                    -webkit-line-clamp: 3;       /* Número de líneas visibles */
+                    -webkit-box-orient: vertical; /* Orientación en bloque */
+                    overflow: hidden;
                 }
                 .product__info--price {
                     font-size: 18px;

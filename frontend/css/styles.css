@@ -149,3 +149,18 @@ body {
     height: 60px;
 }
 
+.container__btn-top button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+
+    color: white;
+    background: orange;
+    padding: 10px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}

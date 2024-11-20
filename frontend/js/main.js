@@ -31,6 +31,11 @@ const containerProducts = document.querySelector('.products')
 let isAtBottom = false
 let isLastPage = false
 document.addEventListener("DOMContentLoaded", async (event) => {
+    const btnToTop = document.querySelector('#btn-to-top')
+    btnToTop.addEventListener('click', (event) => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
+
     supermarketsNames = await fetch('http://127.0.0.1:8000/supermarkets')
         .then(res => res.json())
         .then(data => data.map(supermarket => supermarket.name))
@@ -116,7 +121,7 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC") {
                         const productCard = new ProductCard()
                         productCard.innerHTML =  /* html */`
                             <h4 slot="name" title="${product.name}">${product.name}</h4>
-                            <p slot="price">$${product.price}</p>
+                            <p slot="price">$${reformatPrices(product.price)}</p>
                             <img slot="img_product" src="${product.img_src}" alt="Imagen ilustrativa del producto" >
                             <img slot="img_supermarket" src="${product.supermarket_img}" alt="Logo del supermercado ...">`
                         productCard.setAttribute('href', product.link)
@@ -163,7 +168,42 @@ loadProducts(q, page, order)
 
 
 
+function reformatPrices(price) {
+    const priceString = price.toString()
+    const separatedPrice = priceString.split('.')
 
+    if (separatedPrice.length == 1) {
+        separatedPrice[1] = '00'
+    } else if (separatedPrice[1].length < 2) {
+        separatedPrice[1] += '0'
+    }
+
+    let indexPricePoints = []
+    if (separatedPrice[0].length > 3) {
+        for (let i = (separatedPrice[0].length - 3); i > 0; i = i - 3) {
+            indexPricePoints.push(i)
+        }
+    } else {
+        return separatedPrice.join(',')
+    }
+
+    let subSeparatedPrice = []
+    let partToDivide = separatedPrice[0]
+    const separatedNewPrice = []
+    for (let i = 0; i < indexPricePoints.length; i++){
+        subSeparatedPrice[0] = partToDivide.substring(0, indexPricePoints[i])
+        subSeparatedPrice[1] = partToDivide.substring(indexPricePoints[i], partToDivide.length)
+
+        partToDivide = subSeparatedPrice[0]
+
+        separatedNewPrice.unshift(subSeparatedPrice[1])
+        if (i == indexPricePoints.length - 1) {
+            separatedNewPrice.unshift(subSeparatedPrice[0])
+        }
+    }
+
+    return `${separatedNewPrice.join('.')},${separatedPrice[1]}`
+}
 
 
 

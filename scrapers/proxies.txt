@@ -1,1 +1,0 @@
-Agregar tus proxies SOCKS y/o HTTP, en el formato: <Protocol>://<user>:<pass>@<ip>:<port>. Colocar uno por línea

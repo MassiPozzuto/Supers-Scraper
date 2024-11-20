@@ -23,7 +23,7 @@ Para poder correr este proyecto, antes, necesitás:
 
 En ambos scrapers es necesario tener una copia de la BD. Obviamente, en ambos archivos deberán configurar la parte de la conexión con MySQL con los datos que correspondan (host, user, pass y database). 
 
-También tendrán que instalar todas las librerias mencionadas en `requirements.txt` para que pueda funcionar.
+También tendrán que instalar todas las librerias mencionadas en `scrapers/requirements.txt` para que pueda funcionar.
 
 ### Scraper de Coto
 
@@ -41,7 +41,7 @@ Antes de ejecutarlo, deberán definir el supermercado cencosud a scrapear (Vea, 
 
 ## Modo de uso - Api
 
-Para la api, como ya comenté, use [FastAPI](https://fastapi.tiangolo.com/). Evidentemente, antes de poder ejecutarla tendrán que instalar los requirements, para esto es recomendable [crear un entorno virtual](https://docs.python.org/es/3/tutorial/venv.html). 
+Para la api, como ya comenté, use [FastAPI](https://fastapi.tiangolo.com/). Evidentemente, antes de poder ejecutarla tendrán que instalar las librerias de `api/requirements.txt`, para esto es recomendable [crear un entorno virtual](https://docs.python.org/es/3/tutorial/venv.html). 
 
 Ingresando el comando `fastapi dev main.py` en la terminal, se iniciará el programa y comenzará a escuchar las solicitudes.
 

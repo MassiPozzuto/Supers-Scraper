@@ -4,9 +4,10 @@
   "main": "index.html",
   "module": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server"
   },
-  "author": "",
+  "author": "Massimo Pozzuto",
   "license": "ISC",
   "description": "",
   "dependencies": {

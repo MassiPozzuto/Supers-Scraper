@@ -119,12 +119,18 @@ body {
 
 
 .products {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
+    gap: 20px; 
+    justify-items: start;
 }
+    .products.not__found {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
 
 .products__not-found {
     display: flex;

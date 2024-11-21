@@ -117,6 +117,7 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC") {
                 document.querySelector('.search__filters p').style.width = 'auto'
 
                 if (products.length > 0) {
+                    containerProducts.classList.remove('not__found')
                     products.forEach(product => {
                         const productCard = new ProductCard()
                         productCard.innerHTML =  /* html */`
@@ -129,6 +130,7 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC") {
                         containerProducts.insertAdjacentElement('beforeEnd', productCard)
                     });
                 } else {
+                    containerProducts.classList.add('not__found')
                     console.log("No products")
                     containerProducts.innerHTML = /* html */ `
                         <div class="products__not-found">

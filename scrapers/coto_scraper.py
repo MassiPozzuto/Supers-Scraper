@@ -45,7 +45,7 @@ def remove_duplicate_products(products):
 pagesWithProblems = []
 proxyIndex = 0
 
-def get_coto_products(page = 1):
+def get_coto_products(page = 1, onlyScrapThisPage = False):
   global proxyIndex
   global pagesWithProblems
 
@@ -84,7 +84,7 @@ def get_coto_products(page = 1):
       formatted_price = priceToNumber(product_price)
       products_scraped.append([product_sku, product_name, formatted_price, product_img, f'https://www.cotodigital3.com.ar{product_url}'])
 
-    if len(products) == AMOUNT_PRODUCTS:
+    if len(products) == AMOUNT_PRODUCTS and not onlyScrapThisPage:
       time.sleep(120) # 60 es muy poco, corta en 18.
       more_products_scraped = get_coto_products(page + 1)
       products_scraped.extend(more_products_scraped)
@@ -102,9 +102,16 @@ def get_coto_products(page = 1):
 if __name__ == '__main__':
   obtainsProxies()
   coto_products = get_coto_products()
-  print('Cantidad de productos totales:', len(coto_products))
-  #coto_products = remove_duplicate_products(coto_products)
+
   print('Páginas con problemas:', pagesWithProblems)
+  if len(pagesWithProblems) > 0:
+    for pageWithProblem in pagesWithProblems:
+      productsWithProblems = get_coto_products(pageWithProblem, True)
+      coto_products.extend(productsWithProblems)
+  
+  print('Cantidad de productos totales:', len(coto_products))
+  coto_products = remove_duplicate_products(coto_products)
+  print('Cantidad de productos sin repetidos:', len(coto_products))
 
   conn = mysql.connector.connect(
     host='127.0.0.1',

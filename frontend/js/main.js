@@ -21,10 +21,12 @@ if (paramOrder == "OrderByPriceDESC" || paramOrder == "OrderByNameASC" || paramO
     window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`)
 }
 
-// Parametro 'page'
+// Parametro 'page'y saber si hay páginas previas
 const paramPage = urlParams.get('page')
 let page = (paramPage > 1 && !isNaN(paramPage)) ? parseInt(paramPage) : 1
 let total_pages
+const btnPreviousPages = document.querySelector('#btn-previous-products')
+let hasPreviousPages = page > 1
 
 const containerProducts = document.querySelector('.products')
 
@@ -42,6 +44,22 @@ document.addEventListener("DOMContentLoaded", async (event) => {
 
     typeEffect()
 
+    if (hasPreviousPages) {
+        let previousPage = page
+        btnPreviousPages.parentNode.classList.add('active')
+        btnPreviousPages.addEventListener('click', (event) => {
+            if (previousPage > 0) {
+                previousPage = previousPage - 1
+                loadProducts(q, previousPage, order, true)
+            }
+
+            if (previousPage === 1) {
+                hasPreviousPages = false
+                btnPreviousPages.parentNode.classList.remove('active')
+            }
+        })
+    }
+
     orderSelect.addEventListener('change', (event) => {
         order = orderSelect.value
         urlParams.set('order', orderSelect.value)
@@ -49,6 +67,8 @@ document.addEventListener("DOMContentLoaded", async (event) => {
         urlParams.set('page', 1)
         window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`)
 
+        hasPreviousPages = false
+        btnPreviousPages.parentNode.classList.remove('active')
         
         loadProducts(q, page, order)
     })
@@ -63,6 +83,9 @@ document.addEventListener("DOMContentLoaded", async (event) => {
             page = 1
             urlParams.set('page', 1)
             window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`)
+            
+            hasPreviousPages = false
+            btnPreviousPages.parentNode.classList.remove('active')
 
             /* Hago isLastPage verdadero ya que al buscar nuevos productos, el containerProducts se limpia, por lo que, el usuario se encontrará en el final de la pagina y se 
             ejecutará la paginación. Entonces, al hacer parecer que ya se encuentra en la última página esto no sucede, pero si mantuviesemos dicha varaible en true, la paginación 
@@ -83,6 +106,7 @@ document.addEventListener("DOMContentLoaded", async (event) => {
             console.log('User en el final de la pagina')
             isAtBottom = true
             if (!isLastPage) {
+                console.log("no deberia entrar")
                 page += 1
                 urlParams.set('page', page)
                 window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`)
@@ -98,10 +122,10 @@ document.addEventListener("DOMContentLoaded", async (event) => {
 });
 
 
-async function loadProducts(query, page = 1, order = "OrderByPriceASC") {
+async function loadProducts(query, page = 1, order = "OrderByPriceASC", isForAPreviousPage = false) {
     
     if (query) {
-        if (page == 1) {
+        if (page == 1 && !isForAPreviousPage) {
             containerProducts.innerHTML = ''
         }
 
@@ -117,7 +141,9 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC") {
                 document.querySelector('.search__filters p').style.width = 'auto'
 
                 if (products.length > 0) {
+                    if (isForAPreviousPage) products.reverse()
                     containerProducts.classList.remove('not__found')
+                    
                     products.forEach(product => {
                         const productCard = new ProductCard()
                         productCard.innerHTML =  /* html */`
@@ -127,7 +153,9 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC") {
                             <img slot="img_supermarket" src="${product.supermarket_img}" alt="Logo del supermercado ...">`
                         productCard.setAttribute('href', product.link)
     
-                        containerProducts.insertAdjacentElement('beforeEnd', productCard)
+
+                        if (!isForAPreviousPage) containerProducts.insertAdjacentElement('beforeEnd', productCard)
+                        else containerProducts.insertAdjacentElement('afterBegin', productCard)
                     });
                 } else {
                     containerProducts.classList.add('not__found')
@@ -155,9 +183,15 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC") {
                         </div>`
                 }
 
-                if (total_pages == page){
+                if (isForAPreviousPage) {
+                    return
+                }
+
+                if (total_pages == page) {
+                    console.log('TRUE')
                     isLastPage = true
                 } else {
+                    console.log('FALSE')
                     isLastPage = false
                 }
             })

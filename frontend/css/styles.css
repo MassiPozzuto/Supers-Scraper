@@ -123,7 +123,8 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
     gap: 20px; 
-    justify-items: start;
+    justify-content: center; /* Para el propio contenedor */
+    justify-items: start; /* Para sus hijos (product-card) */
 }
     .products.not__found {
         display: flex;
@@ -168,5 +169,28 @@ body {
     padding: 10px;
     border: none;
     border-radius: 50%;
+    cursor: pointer;
+}
+
+
+.container__btn-previous-products {
+    display: none;
+    margin-bottom: 16px;
+
+}
+    .container__btn-previous-products.active{
+        display: inline-block;
+    }
+
+#btn-previous-products {
+    padding: .75rem 1.5rem;
+    border-radius: 3rem;
+    outline: none;
+    border: none;
+    background: orange;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
     cursor: pointer;
 }

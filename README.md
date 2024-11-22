@@ -3,7 +3,7 @@
 Este proyecto consta de tres partes.
 
 #### Scrapers
-Dos scripts de python los cuales, uno extrae los datos de los productos del supermercado Coto y el otro extrae los datos de los supermercados Cencosud (Jumbo, Disco, Vea). Ambos guardan los datos en una base de datos MySQL
+Dos scripts de python los cuales, uno extrae los datos de los productos del supermercado Coto y el otro extrae los datos de los supermercados Cencosud (Jumbo, Disco, Vea). Ambos guardan los datos en una base de datos MySQL.
 
 #### API
 Hecha en python, utilizando FastAPI, su función es devolver los datos recolectados por los scrapers y solicitados por la pagina.
@@ -15,9 +15,9 @@ Es un simple frontend que utiliza HTML, CSS y JavaScript. El usuario realiza det
 
 Para poder correr este proyecto, antes, necesitás: 
 
-- Tener instalado [Python](https://www.python.org/downloads/)
-- Tener instalado [Node](https://nodejs.org/en/download/package-manager)
-- Tener instalado [MySQL](https://dev.mysql.com/downloads/mysql/)
+- Tener instalado [Python](https://www.python.org/downloads/).
+- Tener instalado [Node](https://nodejs.org/en/download/package-manager).
+- Tener instalado [MySQL](https://dev.mysql.com/downloads/mysql/).
 
 ## Modo de uso - Scrapers
 
@@ -27,7 +27,7 @@ También tendrán que instalar todas las librerias mencionadas en `scrapers/requ
 
 ### Scraper de Coto
 
-Para extraer los datos de coto utilizo la librerias requests y lxml.
+Para extraer los datos de coto utilizo las librerias requests y lxml.
 
 Para que este script funcione, hay un paso más. Deberán crear el archivo `proxies.txt`, en este tendrán que colocar todos los proxies que vayan a utilizar (uno por linea), pueden ser SOCKS o HTTP, en el formato: `<Protocol>://<user>:<pass>@<ip>:<port>`. ¿Por qué proxies? Son necesarios ya que este supermercado bloquea nuestra IP si realizamos muchas consultas desde la misma en poco tiempo. En mi caso utilizo 5 proxies (sumado mi IP) y, para que funcione, entre cada consulta hay un sleep de 120 segundos; si tienen más proxies o un proxy que rote sus IPs, este número variará, es cuestión de probar.
 

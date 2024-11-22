@@ -8,3 +8,6 @@ scrapers/__pycache__/
 
 # Lista de proxies
 scrapers/proxies.txt
+
+# Ignorar node_modules
+frontend/node_modules/

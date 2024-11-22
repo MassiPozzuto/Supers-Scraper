@@ -35,13 +35,19 @@ def extract_amount_products(string):
 
 def get_super_cencosud_categories(driver, url):
   driver.get(url)
-  # Espero a que este el boton de categorias para obtenerlo y luego le hago un hover
-  menu = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.CSS_SELECTOR, 'li.vtex-menu-2-x-menuItem--category-menu .vtex-menu-2-x-menuItem'))
+
+  # Espero a que aparezca determinada etiqueta <span> para poder obtener el menu. Son dos ya que el de Vea tiene una clase distinta al de Disco y Jumbo
+  WebDriverWait(driver, 10).until (
+    EC.any_of (
+      EC.visibility_of_element_located((By.CSS_SELECTOR, 'span.vtex-rich-text-0-x-strong--store-selector-class')), # Para Vea
+      EC.visibility_of_element_located((By.CSS_SELECTOR, 'span.vtex-rich-text-0-x-strong--sucursal')) # Para Disco y Jumbo
+    )
   )
-  ActionChains(driver).move_to_element(menu).perform()
+
+  btnMenu = driver.find_element(By.CSS_SELECTOR, 'li.vtex-menu-2-x-menuItem--category-menu .vtex-menu-2-x-menuItem')
+  ActionChains(driver).move_to_element(btnMenu).perform()
   
-  # Espero a que aparezca el menu
+  # Espero a que aparezca el menu luego del hover
   WebDriverWait(driver, 10).until(
     EC.visibility_of_element_located((By.XPATH, "//nav/ul/li//li/div/a"))
   )

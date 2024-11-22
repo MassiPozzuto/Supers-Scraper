@@ -14,6 +14,14 @@ AMOUNT_PRODUCTS = 20
 SUPERMARKET_NAME = 'Vea' # Cambiar según el supermercado cencosud que se quiera scrapear
 
 
+def extract_amount_products(string):
+    match = re.search(r'\d+', string)
+    if match:
+      return int(match.group())
+    else:
+      return 0
+
+
 def priceToNumber(price):
   # Regex para identificar si los precios estan en el formato español
   regex_es = r"^\d{1,3}(\.\d{3})*(,\d+)?$"
@@ -25,12 +33,17 @@ def priceToNumber(price):
   return float(number)
 
 
-def extract_amount_products(string):
-    match = re.search(r'\d+', string)
-    if match:
-      return int(match.group())
+def remove_duplicate_products(products):
+  seen = set()
+  unique_products = []
+  for product in products:
+    # product[3] = link del producto
+    if product[3] not in seen:
+      unique_products.append(product)
+      seen.add(product[3])
     else:
-      return 0
+      print(f"Producto repetido ({product[3]}): {product[0]}")
+  return unique_products
 
 
 def get_super_cencosud_categories(driver, url):
@@ -132,20 +145,6 @@ def get_cencosud_products(driver, url_base, url_category, page = 1):
 
 
 
-def remove_duplicate_products(products):
-  seen = set()
-  unique_products = []
-  for product in products:
-    if product[3] not in seen:
-      unique_products.append(product)
-      seen.add(product[3])
-    else:
-      print(f"Producto repetido ({product[3]}): {product[0]}")
-
-  return unique_products
-
-
-
 if __name__ == '__main__':
 
   conn = mysql.connector.connect(
@@ -170,7 +169,7 @@ if __name__ == '__main__':
 
 
   driver = webdriver.Chrome()
-  driver.set_window_size(1200, 1500) # Maximizo la ventana porque las páginas tienen dos formatos dependiendo su tamaño y varian algunas cosas
+  driver.set_window_size(1200, 1500) # Determino el tamaño de la ventana porque las páginas tienen dos formatos dependiendo su tamaño y varian algunas cosas
 
   categories = get_super_cencosud_categories(driver, supermarket_url)
   print('Categorias:', categories)

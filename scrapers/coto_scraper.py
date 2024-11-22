@@ -6,16 +6,17 @@ from lxml import html
 
 AMOUNT_PRODUCTS = 100
 PROXIES = []
+
+
 # socks5://<user>:<pass>@<ip>:<port>
 def obtainsProxies():
   global PROXIES
   with open("proxies.txt", "r") as archivo:
-      proxiesLines = archivo.readlines()
+    proxiesLines = archivo.readlines()
 
   # Remover el carácter de salto de línea (\n) al final de cada item
   PROXIES = [proxyLine.strip() for proxyLine in proxiesLines]
   PROXIES.append(None)
-
 
 
 def priceToNumber(price):
@@ -33,11 +34,12 @@ def remove_duplicate_products(products):
   seen = set()
   unique_products = []
   for product in products:
-      if product[0] not in seen:
-        unique_products.append(product)
-        seen.add(product[0])
-      else:
-        print('Producto repetido:', product[1])
+    # product[0] = sku del producto
+    if product[0] not in seen:
+      unique_products.append(product)
+      seen.add(product[0])
+    else:
+      print('Producto repetido:', product[1])
   print('Cantidad de productos totales sin repetidos:', len(unique_products))
   return unique_products
 
@@ -63,6 +65,7 @@ def get_coto_products(page = 1, onlyScrapThisPage = False):
     )
     print('Status code:', r.status_code)
 
+    # Roto el proxy
     if(proxyIndex == len(PROXIES) - 1):
       proxyIndex = 0
     else:
@@ -89,11 +92,14 @@ def get_coto_products(page = 1, onlyScrapThisPage = False):
       more_products_scraped = get_coto_products(page + 1)
       products_scraped.extend(more_products_scraped)
   except:
-    print('--- La recolección de la página:', page, 'falló')
-    pagesWithProblems.append(page)
-    time.sleep(120)
-    more_products_scraped = get_coto_products(page + 1)
-    products_scraped.extend(more_products_scraped)
+    if not onlyScrapThisPage:
+      print('--- La recolección de la página:', page, 'falló')
+      pagesWithProblems.append(page)
+      time.sleep(120)
+      more_products_scraped = get_coto_products(page + 1)
+      products_scraped.extend(more_products_scraped)
+    else:
+      print('--- La recolección de la página:', page, 'volvió a fallar')
 
   finally:
     return products_scraped

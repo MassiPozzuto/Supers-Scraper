@@ -49,4 +49,4 @@ Ingresando el comando `fastapi dev main.py` en la terminal, se iniciará el prog
 
 Antes que nada, deben ejecutar, en la terminal, el comando `npm install` seguido del comando `npm start` o `http-server`. Claramente, la página necesitará de la api para poder funcionar correctamente.
 
-Ya en la página, podrán buscar el producto que se les plazca. Tienen la posibilidad de ordenarlo por su nombre o por su precio.
+Ya en la página, podrán buscar el producto que se les plazca. Tienen la posibilidad de ordenarlo por su nombre o por su precio. Además, ésta cuenta con un carrito en donde podrán armar una especie de lista de los productos que más les interese.

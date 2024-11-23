@@ -165,7 +165,7 @@ body {
     right: 16px;
 
     color: white;
-    background: orange;
+    background: #f7a235;
     padding: 10px;
     border: none;
     border-radius: 50%;
@@ -187,10 +187,113 @@ body {
     border-radius: 3rem;
     outline: none;
     border: none;
-    background: orange;
+    background: #f7a235;
     color: white;
     font-size: 14px;
     font-weight: 500;
     letter-spacing: 1px;
     cursor: pointer;
+}
+
+
+.container__btn-cart #btn-cart {
+    display: flex;
+    border: none;
+    border-radius: 50%;
+    outline: none;
+    padding: 16px;
+    background: #f7a235;
+    color: white;
+    position: fixed;
+    z-index: 1;
+    top: 16px;
+    right: 16px;
+    cursor: pointer;
+}
+
+
+
+
+.cart {
+    display: none;
+    justify-content: space-between;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background: white;
+    z-index: 100;
+    border-left: 1px solid #ddd;
+    height: 100dvh;
+    max-width: 100%;
+}
+.cart__btn {
+    display: flex;
+    border: none;
+    border-radius: 50%;
+    outline: none;
+    padding: 16px;
+    background: #f7a235;
+    color: white;
+}
+.cart__products {
+    min-width: 300px;
+    max-width: 512px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin; 
+}
+
+
+.cart__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    
+    border-bottom: 1px solid #ddd;
+}
+
+.cart__header #btn-cart-close {
+    outline: none;
+    border: none;
+    background: #f5f4f4;
+    display: flex;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+
+footer.cart__resume {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    gap: 8px;
+    background: #f7a235;
+    color: white;
+}
+
+
+.container__alert {
+    padding: 8px 16px;
+    background: #d81111;
+    color: white;
+    font-weight: 500;
+    border-radius: 2rem;
+    position: fixed;
+    top: 32px;
+    animation: shake 0.5s ease-in-out;
+    z-index: 25;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
 }

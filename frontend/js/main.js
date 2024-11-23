@@ -1,7 +1,9 @@
 import { ProductCard } from './components/ProductCard.js'
+import { ProductCart } from './components/ProductCart.js'
 
 const url = window.location.search
 const urlParams = new URLSearchParams(url)
+const localStorage = window.localStorage
 
 // Parametro 'q'
 const inputQuery = document.querySelector('input[name=q]')
@@ -28,11 +30,21 @@ let total_pages
 const btnPreviousPages = document.querySelector('#btn-previous-products')
 let hasPreviousPages = page > 1
 
+// Container de productos de la búsqueda
 const containerProducts = document.querySelector('.products')
+
+// Carrito
+const containerCartProducts = document.querySelector('.cart__products')
+const cart = document.querySelector('.cart')
+const btnOpenCart = document.querySelector('#btn-cart')
+const btnCloseCart = document.querySelector('#btn-cart-close')
+const spanCartTotalPrice = document.querySelector('#cart-total-price')
+
 
 let isAtBottom = false
 let isLastPage = false
 document.addEventListener("DOMContentLoaded", async (event) => {
+    
     const btnToTop = document.querySelector('#btn-to-top')
     btnToTop.addEventListener('click', (event) => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -41,8 +53,8 @@ document.addEventListener("DOMContentLoaded", async (event) => {
     supermarketsNames = await fetch('http://127.0.0.1:8000/supermarkets')
         .then(res => res.json())
         .then(data => data.map(supermarket => supermarket.name))
-
     typeEffect()
+
 
     if (hasPreviousPages) {
         let previousPage = page
@@ -60,6 +72,7 @@ document.addEventListener("DOMContentLoaded", async (event) => {
         })
     }
 
+    // Cambia el order de la busqueda
     orderSelect.addEventListener('change', (event) => {
         order = orderSelect.value
         urlParams.set('order', orderSelect.value)
@@ -69,13 +82,13 @@ document.addEventListener("DOMContentLoaded", async (event) => {
 
         hasPreviousPages = false
         btnPreviousPages.parentNode.classList.remove('active')
-        
+
         loadProducts(q, page, order)
     })
 
+    // Realiza una busqueda nueva
     document.querySelector('form').addEventListener("submit", (event) => {
         event.preventDefault()
-        
 
         if (inputQuery.value) {
             q = inputQuery.value
@@ -83,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async (event) => {
             page = 1
             urlParams.set('page', 1)
             window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`)
-            
+
             hasPreviousPages = false
             btnPreviousPages.parentNode.classList.remove('active')
 
@@ -96,10 +109,10 @@ document.addEventListener("DOMContentLoaded", async (event) => {
     })
 
 
+    // Paginacion "automatica" al llegar al final de la página
     window.addEventListener('scroll', function () {
         const scrollPosition = window.scrollY + window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
-        
 
         // Verificar si estamos cerca del final de la página
         if (scrollPosition >= documentHeight - 10 && !isAtBottom) {
@@ -118,8 +131,134 @@ document.addEventListener("DOMContentLoaded", async (event) => {
             // Resetear el flag si no estamos al final
             isAtBottom = false;
         }
-    });
-});
+    })
+
+    
+    btnOpenCart.addEventListener('click', (event) => {
+        if (localStorage.length > 0) {
+            btnOpenCart.style.display = "none" 
+            cart.style.display = "flex" 
+        } else {
+            const htmlAlert = /*html*/ `
+                <div class="container__alert">
+                    <p class="msj">El carrito de compras esta vacio</p>
+                </div>
+            `
+            document.body.insertAdjacentHTML('beforeEnd', htmlAlert)
+            // Eliminarlo después de 2,5 segundos
+            setTimeout(() => {
+                const alertElement = document.querySelector('.container__alert');
+                if (alertElement) {
+                    alertElement.remove()
+                }
+            }, 2500);
+        }
+        calculateTheTotalPrice()
+    })
+    btnCloseCart.addEventListener('click', (event) => {
+        btnOpenCart.style.display = "flex"
+        cart.style.display = "none" 
+    })
+})
+
+// Cargo los productos correspondientes
+isLastPage = true
+loadProducts(q, page, order)
+loadPreviousCartProducts()
+
+
+// Custom events para el carrito de compras
+document.addEventListener('product:add-to-cart', (event) => {
+    const product = event.detail
+    addProductToCart(product)
+})
+document.addEventListener('product:remove-to-cart-by-main', (event) => {
+    const product = event.detail
+    
+    const productsInTheCart = document.querySelectorAll('product-cart')
+    productsInTheCart.forEach(productInTheCart => {
+        if (productInTheCart.getId() == product.id) {
+            localStorage.removeItem(product.id)
+            productInTheCart.remove()
+            calculateTheTotalPrice()
+
+            if (localStorage.length == 0) {
+                btnCloseCart.click()
+            }
+        }
+    })
+})
+document.addEventListener('product:sum-product-in-cart', (event) => {
+    calculateTheTotalPrice()
+})
+document.addEventListener('product:substract-product-in-cart', (event) => {
+    const productInTheCart = event.detail
+
+    if (productInTheCart.id) {
+        const productsMain = [...document.querySelectorAll('product-card')]
+        const productMatched = productsMain.find(product => product.getId() == productInTheCart.id)
+        if (productMatched) {
+            productMatched.btnAddToCart.classList.remove('deactive')
+            productMatched.btnRemoveToCart.classList.remove('active')
+        }
+    }
+
+    calculateTheTotalPrice(productInTheCart.id)
+    
+    if (localStorage.length == 0) {
+        btnCloseCart.click()
+    }
+})
+
+function calculateTheTotalPrice(ignoreId = null) {
+    const productsInTheCart = document.querySelectorAll('product-cart')
+    let totalPrice = 0
+    productsInTheCart.forEach(product => {
+        const productPrice = product.querySelector('p[slot="price"]').getAttribute('aria-value')
+
+        if (!isNaN(productPrice) && ignoreId != product.getId()) {
+            totalPrice += (parseFloat(productPrice) * product.amount)
+        }
+    })
+    spanCartTotalPrice.innerText = `$${reformatPrices(totalPrice)}`
+}
+
+
+function loadPreviousCartProducts() {
+    for (let i = 0; i < localStorage.length; i++){
+        const productId = localStorage.key(i)
+        const product = JSON.parse(localStorage.getItem(productId))
+        product.id = productId
+        addProductToCart(product)
+    }
+}
+
+
+function addProductToCart(product) {
+    if (!localStorage.getItem(product.id)) {
+        localStorage.setItem(product.id, JSON.stringify({
+            name: product.name,
+            price: product.price,
+            imgProduct: product.imgProduct,
+            imgSupermarket: product.imgSupermarket,
+            link: product.link,
+            amount: product.amount
+        }))
+    }
+
+    const productCart = new ProductCart(product.id, product.amount)
+    productCart.innerHTML =  /* html */`
+        <h4 slot="name" title="${product.name}">${product.name}</h4>
+        <p slot="price" aria-value="${product.price}">$${reformatPrices(product.price)}</p>
+        <img slot="img_product" src="${product.imgProduct}" alt="Imagen ilustrativa del producto" >
+        <img slot="img_supermarket" src="${product.imgSupermarket}" alt="Logo del supermercado" >
+    `
+    productCart.setAttribute('href', product.link)
+
+    containerCartProducts.insertAdjacentElement('beforeEnd', productCart)
+
+    calculateTheTotalPrice()
+}
 
 
 async function loadProducts(query, page = 1, order = "OrderByPriceASC", isForAPreviousPage = false) {
@@ -145,21 +284,33 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC", isForAPr
                     containerProducts.classList.remove('not__found')
                     
                     products.forEach(product => {
-                        const productCard = new ProductCard()
+                        const productCard = new ProductCard(product.id)
                         productCard.innerHTML =  /* html */`
                             <h4 slot="name" title="${product.name}">${product.name}</h4>
-                            <p slot="price">$${reformatPrices(product.price)}</p>
+                            <p slot="price" aria-value="${product.price}" >$${reformatPrices(product.price)}</p>
                             <img slot="img_product" src="${product.img_src}" alt="Imagen ilustrativa del producto" >
                             <img slot="img_supermarket" src="${product.supermarket_img}" alt="Logo del supermercado ...">`
                         productCard.setAttribute('href', product.link)
-    
 
                         if (!isForAPreviousPage) containerProducts.insertAdjacentElement('beforeEnd', productCard)
                         else containerProducts.insertAdjacentElement('afterBegin', productCard)
+                        
+
+                        if (localStorage.getItem(product.id)) {
+                            const productsInTheCart = [ ...document.querySelectorAll('product-cart') ]
+                            const isProductInTheCart = productsInTheCart.some(productInTheCart => productInTheCart.getId() == product.id)
+                            
+                            if (isProductInTheCart) {
+                                productCard.btnAddToCart.classList.add('deactive')
+                                productCard.btnRemoveToCart.classList.add('active')
+                            } else {
+                                productCard.btnAddToCart.click()
+                            }
+                        }
                     });
                 } else {
-                    containerProducts.classList.add('not__found')
                     console.log("No products")
+                    containerProducts.classList.add('not__found')
                     containerProducts.innerHTML = /* html */ `
                         <div class="products__not-found">
                             <div class="container__not-found-svg">
@@ -188,20 +339,14 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC", isForAPr
                 }
 
                 if (total_pages == page) {
-                    console.log('TRUE')
                     isLastPage = true
                 } else {
-                    console.log('FALSE')
                     isLastPage = false
                 }
             })
         
     }
 }
-
-isLastPage = true
-loadProducts(q, page, order)
-
 
 
 function reformatPrices(price) {
@@ -220,6 +365,9 @@ function reformatPrices(price) {
             indexPricePoints.push(i)
         }
     } else {
+        if (separatedPrice[1].length > 2) {
+            separatedPrice[1] = separatedPrice[1].substring(0, 2)
+        }
         return separatedPrice.join(',')
     }
 
@@ -238,8 +386,12 @@ function reformatPrices(price) {
         }
     }
 
+    if (separatedPrice[1].length > 2) {
+        separatedPrice[1] = separatedPrice[1].substring(0, 2)
+    }
     return `${separatedNewPrice.join('.')},${separatedPrice[1]}`
 }
+
 
 
 

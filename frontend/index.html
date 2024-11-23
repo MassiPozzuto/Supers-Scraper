@@ -49,9 +49,51 @@
         <button type="button" id="btn-previous-products">Mostrar anteriores</button>
     </div>
     <main class="products">
-        <!-- Acá van los productos -->
+        <!-- Acá van los productos de la búsqueda -->
     </main>
 
+
+    <!-- Boton para abrir carrito de compras -->
+    <div class="container__btn-cart">
+        <button type="button" id="btn-cart">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                <path d="M17 17h-11v-14h-2" />
+                <path d="M6 5l14 1l-1 7h-13" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Carrito de compras -->
+    <aside class="cart">
+        <header class="cart__header">
+            <h3>Carrito de compras</h3>
+            <button type="button" id="btn-cart-close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M18 6l-12 12" />
+                    <path d="M6 6l12 12" />
+                </svg>
+            </button>
+        </header>
+        <section class="cart__products">
+            <!-- Acá van los productos del carrito -->
+        </section>
+        <footer class="cart__resume">
+            <div class="cart__resume--total">
+                <span>Total: </span>
+                <span id="cart-total-price">$0,00</span>
+            </div>
+        </footer>
+    </aside>
+
+    <!-- Boton para subir -->
     <div class="container__btn-top">
         <button type="button" id="btn-to-top">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
@@ -62,6 +104,7 @@
             </svg>
         </button>
     </div>
+
 </body>
 
 </html>

@@ -81,7 +81,13 @@ body {
     cursor: pointer;
     background: #f7a235;
     color: white;
+
+    transition: 200ms;
 }
+    .navbar__submit:hover {
+        background: #f59c29;
+        border-color: #f59c29;
+    }
 
 
 .search__filters {
@@ -114,6 +120,16 @@ body {
     outline: none;
 
     cursor: pointer;
+}
+.search__filters--sort-text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+@media (width < 560px){
+    .search__filters--sort-text span{
+        display: none;
+    }
 }
 
 
@@ -156,7 +172,7 @@ body {
     height: 60px;
 }
 
-.container__btn-top button {
+.container__btn-top #btn-to-top {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -170,7 +186,12 @@ body {
     border: none;
     border-radius: 50%;
     cursor: pointer;
+
+    transition: 200ms;
 }
+    .container__btn-top #btn-to-top:hover {
+        transform: translateY(-8px);
+    }
 
 
 .container__btn-previous-products {
@@ -199,18 +220,22 @@ body {
 .container__btn-cart #btn-cart {
     display: flex;
     border: none;
-    border-radius: 50%;
+    border-radius: 0 0 2rem 2rem;
     outline: none;
     padding: 16px;
     background: #f7a235;
     color: white;
     position: fixed;
     z-index: 1;
-    top: 16px;
+    top: 0;
     right: 16px;
     cursor: pointer;
-}
 
+    transition: 200ms;
+}
+    .container__btn-cart #btn-cart:hover {
+        padding: 20px 16px;
+    }
 
 
 
@@ -288,6 +313,10 @@ footer.cart__resume {
     top: 32px;
     animation: shake 0.5s ease-in-out;
     z-index: 25;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 @keyframes shake {

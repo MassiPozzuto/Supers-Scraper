@@ -252,6 +252,13 @@ body {
     height: 100dvh;
     max-width: 100%;
 }
+    .show-cart {
+        animation: slideInFromRight 300ms ease-out;
+    }
+    .closed-cart {
+        animation: slideOutToRight  300ms ease-in;
+    }
+    
 .cart__btn {
     display: flex;
     border: none;
@@ -319,10 +326,29 @@ footer.cart__resume {
     gap: 10px;
 }
 
+
+/***********************************    Animaciones      ******************************************/
 @keyframes shake {
   0% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   50% { transform: translateX(5px); }
   75% { transform: translateX(-5px); }
   100% { transform: translateX(0); }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%); /* Empieza fuera de la pantalla por la derecha */
+  }
+  to {
+    transform: translateX(0); /* Llega a su posición original */
+  }
+}
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }

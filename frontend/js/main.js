@@ -137,7 +137,9 @@ document.addEventListener("DOMContentLoaded", async (event) => {
     btnOpenCart.addEventListener('click', (event) => {
         if (localStorage.length > 0) {
             btnOpenCart.style.display = "none" 
+            cart.classList.remove('closed-cart')
             cart.style.display = "flex"
+            cart.classList.add('show-cart')
             calculateTheTotalPrice()
         } else {
             const htmlAlert = /*html*/ `
@@ -158,7 +160,13 @@ document.addEventListener("DOMContentLoaded", async (event) => {
     })
     btnCloseCart.addEventListener('click', (event) => {
         btnOpenCart.style.display = "flex"
-        cart.style.display = "none" 
+
+        cart.classList.remove('show-cart')
+        cart.classList.add('closed-cart')
+        cart.addEventListener('animationend', () => {
+            // Cuando la animacion termina, se oculta el elemento. Este eventlistener se ejecuta una sola vez
+            cart.style.display = 'none'
+        },{ once: true });
     })
 })
 

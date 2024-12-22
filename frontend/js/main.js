@@ -197,7 +197,7 @@ document.addEventListener('product:remove-to-cart-by-main', (event) => {
         }
     })
 })
-document.addEventListener('product:sum-product-in-cart', (event) => {
+document.addEventListener('product:update-total-price-cart', (event) => {
     calculateTheTotalPrice()
 })
 document.addEventListener('product:substract-product-in-cart', (event) => {
@@ -223,11 +223,20 @@ function calculateTheTotalPrice(ignoreId = null) {
     const productsInTheCart = document.querySelectorAll('product-cart')
     let totalPrice = 0
     productsInTheCart.forEach(product => {
-        const productPrice = product.querySelector('p[slot="price"]').getAttribute('aria-value')
+        if (ignoreId == product.getId()) return
 
-        if (!isNaN(productPrice) && ignoreId != product.getId()) {
-            totalPrice += (parseFloat(productPrice) * product.amount)
-        }
+        const productPrice = product.querySelector('span[slot="price"]').getAttribute('aria-value')
+        if (isNaN(productPrice)) return
+
+        const dataOffers = product.infoOfferPrices()
+        let totalAmount = product.amount
+
+        dataOffers.forEach((offer) => {
+            totalPrice += (offer.price * offer.amount)
+            totalAmount = totalAmount - offer.amount
+        })
+
+        totalPrice += (parseFloat(productPrice) * totalAmount)
     })
     spanCartTotalPrice.innerText = `$${reformatPrices(totalPrice)}`
 }
@@ -251,6 +260,7 @@ function addProductToCart(product) {
             imgProduct: product.imgProduct,
             imgSupermarket: product.imgSupermarket,
             link: product.link,
+            offers: product.offers,
             amount: product.amount
         }))
     }
@@ -258,11 +268,12 @@ function addProductToCart(product) {
     const productCart = new ProductCart(product.id, product.amount)
     productCart.innerHTML =  /* html */`
         <h4 slot="name" title="${product.name}">${product.name}</h4>
-        <p slot="price" aria-value="${product.price}">$${reformatPrices(product.price)}</p>
+        <span slot="price" aria-value="${product.price}">$${reformatPrices(product.price)}</span>
         <img slot="img_product" src="${product.imgProduct}" alt="Imagen ilustrativa del producto" >
         <img slot="img_supermarket" src="${product.imgSupermarket}" alt="Logo del supermercado" >
     `
     productCart.setAttribute('href', product.link)
+    productCart.offers = product.offers
 
     containerCartProducts.insertAdjacentElement('beforeEnd', productCart)
 
@@ -296,10 +307,11 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC", isForAPr
                         const productCard = new ProductCard(product.id)
                         productCard.innerHTML =  /* html */`
                             <h4 slot="name" title="${product.name}">${product.name}</h4>
-                            <p slot="price" aria-value="${product.price}" >$${reformatPrices(product.price)}</p>
+                            <span slot="price" aria-value="${product.price}" class="span-old-price">$${reformatPrices(product.price)}</span>
                             <img slot="img_product" src="${product.img_src}" alt="Imagen ilustrativa del producto" >
                             <img slot="img_supermarket" src="${product.supermarket_img}" alt="Logo del supermercado ...">`
                         productCard.setAttribute('href', product.link)
+                        productCard.offers = product.offers
 
                         if (!isForAPreviousPage) containerProducts.insertAdjacentElement('beforeEnd', productCard)
                         else containerProducts.insertAdjacentElement('afterBegin', productCard)
@@ -358,7 +370,7 @@ async function loadProducts(query, page = 1, order = "OrderByPriceASC", isForAPr
 }
 
 
-function reformatPrices(price) {
+export function reformatPrices(price) {
     const priceString = price.toString()
     const separatedPrice = priceString.split('.')
 

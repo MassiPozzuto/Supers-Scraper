@@ -1,3 +1,5 @@
+import { reformatPrices } from '../main.js'
+
 export class ProductCard extends HTMLElement {
     handleEvent(event) {
         if (event.type === "click" && (event.target === this.name || event.target === this.img))
@@ -6,6 +8,43 @@ export class ProductCard extends HTMLElement {
             this.addToCart()
         else if (event.type === "click" && event.target === this.btnRemoveToCart)
             this.removeToCart()
+        else if (event.type === "click" && event.currentTarget.classList.contains('btn__offer-restricted'))
+            this.toggleOffer(event.currentTarget)
+    }
+
+    toggleOffer(btnOffer) {
+        const index = parseInt(btnOffer.dataset.index)
+        const isActive = this.activeRestrictedOffers.get(index) || false
+
+        this.activeRestrictedOffers.set(index, !isActive)
+        btnOffer.classList.toggle('deactivated')
+        this.updatePrice()
+    }
+
+    updatePrice() {
+        let finalPrice = this.priceRegular
+        let isCU = false
+
+        this.offers.forEach((offer, index) => {
+            if (this.activeRestrictedOffers.get(index) !== false) {
+                const offerPrice = offer.price
+                if (offerPrice < finalPrice) {
+                    finalPrice = offerPrice // Precio más bajo
+                    
+                    if (offer.text) isCU = true
+                }
+
+            }
+        });
+
+        if (finalPrice == this.priceRegular) this.price.style.display = 'none'
+        else this.price.style.display = 'flex'
+        
+        if (isCU) this.offerSimbolCU.classList.add('active')
+        else this.offerSimbolCU.classList.remove('active')
+        
+        this.offerPrice.innerHTML = `$${reformatPrices(finalPrice)}`
+        this.offerPrice.setAttribute('aria-value', finalPrice.toString())
     }
 
     redirectToProductLink() {
@@ -25,6 +64,7 @@ export class ProductCard extends HTMLElement {
                     price: parseFloat(price),
                     imgProduct: this.img.getAttribute('src'),
                     imgSupermarket: this.querySelector('img[slot=img_supermarket]').getAttribute('src'),
+                    offers: this.offers,
                     link: this.link,
                     amount: 1
                 },
@@ -60,6 +100,8 @@ export class ProductCard extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         this.#id = id
+
+        this.activeRestrictedOffers = new Map();
     }
 
     connectedCallback() {
@@ -74,7 +116,7 @@ export class ProductCard extends HTMLElement {
                     flex-direction: column;
 
                     width: 250px;
-                    height: 380px;
+                    height: 388px;
 
                     border: 1px solid #eee;
                     border-radius: 20px;
@@ -87,7 +129,7 @@ export class ProductCard extends HTMLElement {
                 }
                 .product__img > ::slotted(img) {
                     width: 100%;
-                    height: 175px;
+                    height: 150px;
                     object-fit: contain;
 
                     cursor: pointer;
@@ -109,7 +151,8 @@ export class ProductCard extends HTMLElement {
                     justify-content: space-between;
                 }
                 .product__info--name ::slotted(h4) {
-                    max-height: 50px;
+                    font-size: 14px;
+                    max-height: 36px;
                     display: -webkit-box;        /* Requerido para usar el truncado multilineal */
                     -webkit-line-clamp: 2;       /* Número de líneas visibles */
                     -webkit-box-orient: vertical; /* Orientación en bloque */
@@ -120,7 +163,7 @@ export class ProductCard extends HTMLElement {
                 }
                 .product__info--name:hover > ::slotted(h4) {
                     text-decoration: underline;
-                    max-height: 75px;
+                    max-height: 54px;
                     display: -webkit-box;        /* Requerido para usar el truncado multilineal */
                     -webkit-line-clamp: 3;       /* Número de líneas visibles */
                     -webkit-box-orient: vertical; /* Orientación en bloque */
@@ -130,6 +173,67 @@ export class ProductCard extends HTMLElement {
                     font-size: 18px;
                     font-weight: 500;
                 }
+                    .product__info--price .prices {
+                        display: flex;
+                        flex-direction: column;
+                        height: 42px;
+                    }
+                    .product__info--price.on-sale {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 5px;
+                    }
+                    .container__offers > *{
+                        width: fit-content;
+                        font-weight: 400;
+                        font-size: 13px;
+                        padding: 3px 10px !important;
+                        border: 1px solid transparent;
+                        border-radius: 1rem;
+                        background: red;
+                        color: white;
+                    }
+                    .container__offers {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+
+                        overflow-x: scroll;
+                        white-space: nowrap;
+                        scrollbar-width: none;
+                        user-select:none;
+                    }
+                    .container__offers > button {
+                        display: flex;
+                        align-items: center;
+                        gap: 3px;
+
+                        cursor: pointer;
+                        outline: none;
+                    }
+                    .container__offers button.deactivated {
+                        border-color: red;
+                        background: white;
+                        color: red;
+                    }
+                    .container__offers button > svg {
+                        width: 17px;
+                        height: 17px;
+                    }
+                    .product__info--price.on-sale ::slotted(span.span-old-price) {
+                        color: gray;
+                        font-size: 14px;
+                        text-decoration: line-through;
+                    }
+
+                    .prices div {
+                        display: flex;
+                        gap: 3px;
+                    }
+                    .prices-c-u {
+                        display: inline-block;
+                        font-size: 12px;
+                    }
                 #btn-add-to-cart, #btn-delete-to-cart {
                     display: inline-block;
                     width: 100%;
@@ -166,21 +270,77 @@ export class ProductCard extends HTMLElement {
                     <slot name="name"></slot>
                 </div>
                 <div class="product__info--price">
-                    <slot name="price"></slot>
+                    <div class="prices">
+                        <slot name="price"></slot>
+                    </div>
                 </div>
             </div>
             <div class="product__cart">
                 <button type="button" class="" id="btn-add-to-cart">Agregar al carrito</button>
                 <button type="button" class="" id="btn-delete-to-cart">Eliminar del carrito</button>
             </div>
-            
         `
         
         this.link = this.getAttribute('href')
-        
         this.name = this.querySelector('h4')
-        this.price = this.querySelector('p')
         this.img = this.querySelector('img[slot=img_product]')
+        this.price = this.querySelector('span[slot=price]')
+        this.priceRegular = parseFloat(this.price.getAttribute('aria-value'))
+
+        if (this.offers) {
+            const containerPrice = this.shadowRoot.querySelector('.product__info--price')
+            containerPrice.classList.add('on-sale')
+            let offerHTML = /* html*/`
+                <div class="container__offers">
+            `
+
+            let rareOffer = false
+            this.offers.forEach((offer, index) => {
+                rareOffer = offer.text != null
+                const offerText = (rareOffer) ? offer.text : `-${Math.round(100 - (offer.price * 100 / this.priceRegular))}%`
+
+
+                if (offer.is_restricted) {
+                    this.activeRestrictedOffers.set(index, true)
+                    offerHTML += /* html */ `
+                        <button type="button" data-value="${offer.price}" data-index="${index}" title="Solo para: ${offer.is_restricted}" class="btn__offer-restricted">
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-alert-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" /><path d="M12 8v4" /><path d="M12 16h.01" /></svg>
+
+                            <span>${offerText}</span>
+                        </button>
+                    `
+                } else {
+                    offerHTML += /* html */ `<span aria-value="${offer.price}" >${offerText}</span>`
+                }
+            });
+            
+            offerHTML += /* html */`
+                </div>
+                <div class="prices">
+                    <div>
+                        <span id="default-offer-price" aria-value="" ></span>
+                        <span class="prices-c-u">c/u</span>
+                    </div>
+                    <slot name="price" class="span-old-price"></slot>
+                </div>
+            `
+            containerPrice.innerHTML = offerHTML
+
+            this.btnsOfferRestricted = this.shadowRoot.querySelectorAll('.btn__offer-restricted')
+            this.btnsOfferRestricted.forEach((btnOfferRestricted) => {
+                btnOfferRestricted.addEventListener("click", this)
+            })
+
+            this.offerPrice = this.shadowRoot.querySelector('#default-offer-price')
+            this.offerSimbolCU = this.shadowRoot.querySelector('.prices-c-u')
+
+            this.offersContainer = this.shadowRoot.querySelector(".container__offers")
+            this.checkOverflow = this.offersContainer.scrollWidth > this.offersContainer.clientWidth;
+            this.enableDragScroll()
+
+            this.updatePrice()
+        }
+        
         this.btnRemoveToCart = this.shadowRoot.querySelector('#btn-delete-to-cart')
         this.btnAddToCart = this.shadowRoot.querySelector('#btn-add-to-cart')
 
@@ -195,7 +355,42 @@ export class ProductCard extends HTMLElement {
         this.img.removeEventListener("click", this);
         this.btnAddToCart.removeEventListener("click", this)
         this.btnRemoveToCart.removeEventListener("click", this)
+
+        if (this.btnsOfferRestricted) {
+            this.btnsOfferRestricted.forEach((btnOfferRestricted) => {
+                btnOfferRestricted.removeEventListener("click", this)
+            })
+        }
+    }
+
+
+    // Scroll con clic y arrastre
+    enableDragScroll() {
+        let isDragging = false
+        let startX, scrollLeft
+
+        this.offersContainer.addEventListener("mousedown", (e) => {
+            if (!this.checkOverflow) return
+            isDragging = true
+            startX = e.pageX - this.offersContainer.offsetLeft
+            scrollLeft = this.offersContainer.scrollLeft
+            this.offersContainer.style.cursor = "grabbing"
+        })
+
+        window.addEventListener("mousemove", (e) => {
+            if (!isDragging) return
+            e.preventDefault()
+            const x = e.pageX - this.offersContainer.offsetLeft
+            const walk = x - startX // Distancia arrastrada
+            this.offersContainer.scrollLeft = scrollLeft - walk
+        })
+
+        window.addEventListener("mouseup", () => {
+            if (!isDragging) return
+            isDragging = false
+            this.offersContainer.style.cursor = "grab"
+        })
     }
 }
 
-customElements.define("product-card", ProductCard);
+customElements.define("product-card", ProductCard)

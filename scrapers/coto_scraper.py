@@ -113,7 +113,7 @@ def get_coto_products(page = 1, onlyScrapThisPage = False):
           offer_price = container_second_type_offer[0].text_content().strip()
           offer_price = offer_price.replace('c/u', '')
           offer_text = product.xpath(f".//div[@id='divProductAddCart_sku{product_sku}']//div[@class='product_discount']//div[@class='second_price_discount_container']//span[@class='text_price_discount']/text()")[0]
-          offers.append([offer_text, priceToNumber(offer_price), 'Comunidad coto'])
+          offers.append([offer_text, priceToNumber(offer_price), 'Exclusivo Comunidad Coto'])
         
         if isNormalOffer:
           # Oferta "normal"
@@ -172,7 +172,7 @@ if __name__ == '__main__':
 
   insert_product_query = """
     INSERT INTO product (id_supermarket, sku, name, price, img_src, link)
-    VALUES (%s, %s, %s, %s, %s, %s)
+    VALUES (1, %s, %s, %s, %s, %s)
   """
   insert_offer_query = """
     INSERT INTO offer (id_product, text, price, is_restricted)
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     product_sku, product_name, regular_price, product_img, product_url, offers = product
 
     # Insertar producto
-    cursor.execute(insert_product_query, (1, product_sku, product_name, regular_price, product_img, product_url))
+    cursor.execute(insert_product_query, (product_sku, product_name, regular_price, product_img, product_url))
     product_id = cursor.lastrowid  # Obtener el ID del producto insertado
 
     # Insertar ofertas relacionadas (si existen)

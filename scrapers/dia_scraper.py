@@ -81,7 +81,7 @@ def get_dia_categories():
     return None
 
 def get_dia_endpoint(categories, page):
-  new_parameters = json.loads(json.dumps(DEFAULT_VTEX_PARAMETERS)) # Copia profunda
+  new_parameters = json.loads(json.dumps(DEFAULT_VTEX_PARAMETERS)) # Para obtener un nuevo objeto en memoria y no un puntero a DEFAULT_VTEX_PARAMETERS
   new_parameters["extensions"]["variables"]["from"] = CANT_REG_VTEX * (page - 1)
   new_parameters["extensions"]["variables"]["to"] = CANT_REG_VTEX * page - 1
   new_parameters["extensions"]["variables"]["query"] = "/".join(categories)
@@ -108,7 +108,6 @@ def get_dia_endpoint(categories, page):
   return f"{URL_BASE}_v/segment/graphql/v1?{query_string}"
 
 def get_dia_products_by_categories(categories, page = 1):
-  print(page)
   endpoint_url = get_dia_endpoint(categories, page)
 
   subcategory_products = []

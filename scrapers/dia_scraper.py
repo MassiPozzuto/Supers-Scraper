@@ -108,6 +108,7 @@ def get_dia_endpoint(categories, page):
   return f"{URL_BASE}_v/segment/graphql/v1?{query_string}"
 
 def get_dia_products_by_categories(categories, page = 1):
+  print(page)
   endpoint_url = get_dia_endpoint(categories, page)
 
   subcategory_products = []
@@ -155,9 +156,8 @@ def get_dia_products_by_categories(categories, page = 1):
               offer_price = second_quantity / minimum_quantity
             elif '%' in offer_text:
               # 2do al 80%, 2do al 50%
-              crucial_number = float(f"0.{second_quantity}")
-              result_price = (minimum_quantity - 1) * list_price + list_price * crucial_number
-              offer_price = result_price / minimum_quantity
+              crucial_number = float(f"{minimum_quantity - 1}.{second_quantity}")
+              offer_price =  list_price * crucial_number / minimum_quantity
             else:
               # 2x1, 3x2
               offer_price = second_quantity * list_price / minimum_quantity

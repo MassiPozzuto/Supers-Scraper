@@ -117,6 +117,7 @@ async def search_product(
   q:str | None = None, 
   order:str = "OrderByPriceASC", 
   supermarket:int | None = None, 
+  onlyWithOffers:bool = False, 
   page: Annotated[int, Query(gt=0)] = 1, 
   limit: Annotated[int, Query(le=100)] = 50
 ) -> Tuple[list[ProductSearchResponse], int, int]:
@@ -144,11 +145,11 @@ async def search_product(
         ).label("offers")
       )
       .join(Supermarket) # INNER JOIN
-      .join(Offer, isouter=True)  # LEFT JOIN
+      .join(Offer, isouter=not onlyWithOffers)  # isouter=True --> LEFT JOIN || isouter=False --> INNER JOIN
       .group_by(Product.id)
       .offset((page - 1) * limit).limit(limit)
     )
-    statement_amt_total_products = select(func.count(Product.id))
+    statement_amt_total_products = select(func.count(Product.id)).join(Offer, isouter=not onlyWithOffers)
 
     splitedQuery = q.split(' ')
     for wordOfQuery in splitedQuery:
@@ -160,7 +161,6 @@ async def search_product(
       statement_amt_total_products = statement_amt_total_products.where(Product.id_supermarket == supermarket)
 
     if order == "OrderByPriceDESC":
-      #statement_products = statement_products.order_by(Product.price.desc())
       statement_products = statement_products.order_by(func.coalesce(func.min(Offer.price), Product.price).desc())
     elif order == "OrderByNameASC":
       statement_products = statement_products.order_by(Product.name)
@@ -168,7 +168,6 @@ async def search_product(
       statement_products = statement_products.order_by(Product.name.desc())
     else:
       # OrderByPriceASC 
-      #statement_products = statement_products.order_by(Product.price)
       statement_products = statement_products.order_by(func.coalesce(func.min(Offer.price), Product.price))
 
     products = session.exec(statement_products).all()

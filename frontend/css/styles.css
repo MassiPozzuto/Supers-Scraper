@@ -108,7 +108,6 @@ body {
     align-items: center;
     gap: 12px;
 
-    margin-left: 10px;
 }
 .search__filters--sort span {
     text-align: right;
@@ -121,6 +120,7 @@ body {
 
     cursor: pointer;
 }
+
 .search__filters--sort-text {
     display: flex;
     align-items: center;
@@ -130,6 +130,23 @@ body {
     .search__filters--sort-text span{
         display: none;
     }
+}
+.search__filters--items  {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 10px;
+    margin-left: 10px;
+}
+.search__filters--offers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#checkbox-offers, .search__filters--offers > label {
+    cursor: pointer;
+    user-select: none; /* Para que no moleste al clickarlo */
 }
 
 
@@ -352,3 +369,5 @@ footer.cart__resume {
     transform: translateX(100%);
   }
 }
+
+

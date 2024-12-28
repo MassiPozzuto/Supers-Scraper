@@ -10,6 +10,11 @@ const inputQuery = document.querySelector('input[name=q]')
 let q = urlParams.get('q')
 inputQuery.value = q
 
+// Parametro 'onlyWithOffers'
+const btnOnlyWithOffers = document.querySelector('#checkbox-offers')
+let onlyWithOffers = urlParams.get('onlyWithOffers') == 'true' || urlParams.get('onlyWithOffers') == 1
+if (onlyWithOffers) btnOnlyWithOffers.checked = true
+
 // Parametro 'order'
 const orderSelect = document.querySelector('select[name=select-sort]')
 const paramOrder = urlParams.get('order')
@@ -62,7 +67,7 @@ document.addEventListener("DOMContentLoaded", async (event) => {
         btnPreviousPages.addEventListener('click', (event) => {
             if (previousPage > 0) {
                 previousPage = previousPage - 1
-                loadProducts(q, previousPage, order, true)
+                loadProducts(q, previousPage, order, onlyWithOffers, true)
             }
 
             if (previousPage === 1) {
@@ -83,7 +88,18 @@ document.addEventListener("DOMContentLoaded", async (event) => {
         hasPreviousPages = false
         btnPreviousPages.parentNode.classList.remove('active')
 
-        loadProducts(q, page, order)
+        loadProducts(q, page, order, onlyWithOffers)
+    })
+
+    // Solo productos en oferta
+    btnOnlyWithOffers.addEventListener('change', (event) => {
+        onlyWithOffers = btnOnlyWithOffers.checked
+        urlParams.set('onlyWithOffers', onlyWithOffers)
+        page = 1
+        urlParams.set('page', 1)
+        window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`)
+
+        loadProducts(q, page, order, onlyWithOffers)
     })
 
     // Realiza una busqueda nueva
@@ -104,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async (event) => {
             ejecutará la paginación. Entonces, al hacer parecer que ya se encuentra en la última página esto no sucede, pero si mantuviesemos dicha varaible en true, la paginación 
             ya no funcionaria, por eso dentro de loadProducts, si page != total_page, isLastPage se vuelve false */
             isLastPage = true
-            loadProducts(inputQuery.value, page, order)
+            loadProducts(inputQuery.value, page, order, onlyWithOffers)
         }
     })
 
@@ -124,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async (event) => {
                 urlParams.set('page', page)
                 window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`)
 
-                loadProducts(q, page, order)
+                loadProducts(q, page, order, onlyWithOffers)
             }
 
         } else if (scrollPosition < documentHeight - 10) {
@@ -172,7 +188,7 @@ document.addEventListener("DOMContentLoaded", async (event) => {
 
 // Cargo los productos correspondientes
 isLastPage = true
-loadProducts(q, page, order)
+loadProducts(q, page, order, onlyWithOffers)
 loadPreviousCartProducts()
 
 
@@ -281,14 +297,14 @@ function addProductToCart(product) {
 }
 
 
-async function loadProducts(query, page = 1, order = "OrderByPriceASC", isForAPreviousPage = false) {
+async function loadProducts(query, page = 1, order = "OrderByPriceASC", onlyWithOffers = false, isForAPreviousPage = false) {
     
     if (query) {
         if (page == 1 && !isForAPreviousPage) {
             containerProducts.innerHTML = ''
         }
 
-        await fetch(`http://127.0.0.1:8000/search?q=${query}&page=${page}&order=${order}`)
+        await fetch(`http://127.0.0.1:8000/search?q=${query}&page=${page}&order=${order}&onlyWithOffers=${onlyWithOffers}`)
             .then(res => res.json())
             .then(data => {
                 console.log(data)

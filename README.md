@@ -3,7 +3,7 @@
 Este proyecto consta de tres partes.
 
 #### Scrapers
-Dos scripts de python los cuales, uno extrae los datos de los productos del supermercado Coto y el otro extrae los datos de los supermercados Cencosud (Jumbo, Disco, Vea). Ambos guardan los datos en una base de datos MySQL.
+Tres scripts de python de los cuales se utilizan para extraer datos de productos de los supermercados Coto, Dia y Cencosud (Jumbo, Disco, Vea). Todos guardan los datos en una misma base de datos MySQL.
 
 #### API
 Hecha en python, utilizando FastAPI, su función es devolver los datos recolectados por los scrapers y solicitados por la pagina.
@@ -21,7 +21,7 @@ Para poder correr este proyecto, antes, necesitás:
 
 ## Modo de uso - Scrapers
 
-En ambos scrapers es necesario tener una copia de la BD. Obviamente, en ambos archivos deberán configurar la parte de la conexión con MySQL con los datos que correspondan (host, user, pass y database). 
+Es necesario tener una copia de la BD. Obviamente, en los archivos deberán configurar la parte de la conexión con MySQL con los datos que correspondan (host, user, pass y database). 
 
 También tendrán que instalar todas las librerias mencionadas en `scrapers/requirements.txt` para que pueda funcionar.
 
@@ -38,6 +38,12 @@ Con esto listo, podrán ejecutar el script y al cabo de cierto tiempo habrán ob
 En este scraper, los datos los obtenemos con la libreria selenium. Primero, abrirá una ventana de Chrome en la página del supermercado cencosud y extraerá todas sus categorias, para luego, a partir de ellas, recorrer cada una y obtener sus productos. Finalmente, lo obtenido se guarda en la BD.
 
 Antes de ejecutarlo, deberán definir el supermercado cencosud a scrapear (Vea, Jumbo o Disco) en `SUPERMARKET_NAME`.
+
+### Scraper de Dia
+
+La obtención de los datos de los productos de Dia, se realiza a través de los endpoints de [VTEX](https://vtex.com/es-ar/) que utiliza el propio supermercado en su página. En primer lugar se recuperan las categorias que usa el super para luego conseguir los productos a través de estas.
+
+No necesitan modificar nada, simplemente ejecutarlo y esperar.
 
 ## Modo de uso - Api
 

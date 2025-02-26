@@ -162,14 +162,14 @@ async def search_product(
 
 
   if order == "OrderByPriceDESC":
-    statement_products = statement_products.order_by(func.coalesce(func.min(Offer.price), Product.price).desc())
+    statement_products = statement_products.order_by(func.coalesce(func.min(Offer.price), Product.price).desc(), Product.id)
   elif order == "OrderByNameASC":
-    statement_products = statement_products.order_by(Product.name)
+    statement_products = statement_products.order_by(Product.name, Product.id)
   elif order == "OrderByNameDESC":
-    statement_products = statement_products.order_by(Product.name.desc())
+    statement_products = statement_products.order_by(Product.name.desc(), Product.id)
   else:
     # OrderByPriceASC 
-    statement_products = statement_products.order_by(func.coalesce(func.min(Offer.price), Product.price))
+    statement_products = statement_products.order_by(func.coalesce(func.min(Offer.price), Product.price), Product.id)
 
   products = session.exec(statement_products).all()
   amt_total_products = session.exec(statement_amt_total_products).first()

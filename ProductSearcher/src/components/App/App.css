@@ -1,0 +1,35 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+
+/* BOTON VER ANTERIORES PRODUCTOS */
+.container__btn-previous-products {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.container__btn-previous-products button {
+  padding: .75rem 1.5rem;
+  border-radius: 3rem;
+  outline: none;
+  border: none;
+  background: #f7a235;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+/* BOTON VER ANTERIORES PRODUCTOS */

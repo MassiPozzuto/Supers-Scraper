@@ -1,0 +1,22 @@
+h3,
+h4,
+p {
+    margin: 0;
+}
+
+main.products {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
+    gap: 20px;
+    justify-content: center;
+    /* Para el propio contenedor */
+    justify-items: start;
+    /* Para sus hijos (product-card) */
+}
+
+main.products.not__found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

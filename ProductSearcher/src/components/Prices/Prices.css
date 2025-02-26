@@ -1,0 +1,85 @@
+.actual-price,
+.offer-price {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.product__info--price .prices {
+    display: flex;
+    flex-direction: column;
+}
+
+.product__info--price.card .prices {
+    height: 42px;
+}
+
+.product__info--price.cartOffer .prices {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.product__info--price.on-sale {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.product__info--price .container__offers>span {
+    width: fit-content;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 3px 10px !important;
+    border: 1px solid transparent;
+    border-radius: 1rem;
+    background: red;
+    color: white;
+}
+
+.product__info--price.cartOffer .container__offers>span {
+    font-size: 12px;
+    padding: 1px 8px !important;
+}
+
+.container__offers {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    overflow-x: scroll;
+    white-space: nowrap;
+    scrollbar-width: none;
+    user-select: none;
+}
+
+.container__offers>.offer-is-restricted {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    cursor: pointer;
+    outline: none;
+}
+
+.container__offers .offer-is-restricted.deactivated {
+    border-color: red;
+    background: white;
+    color: red;
+}
+
+.product__info--price.on-sale span.old-price {
+    color: gray;
+    font-size: 14px;
+    text-decoration: line-through;
+}
+
+.prices div {
+    display: flex;
+    gap: 3px;
+}
+
+.prices-c-u {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+}

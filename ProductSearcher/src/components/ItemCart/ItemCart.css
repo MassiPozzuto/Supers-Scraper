@@ -1,0 +1,97 @@
+.product__cart {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 148px;
+    width: 100%;
+    max-width: 100vw;
+    padding: 16px !important;
+    border-bottom: 1px solid #ddd;
+
+    position: relative;
+}
+
+.product__cart--info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+}
+
+.product__cart--info a .img_product {
+    width: 80px;
+    cursor: pointer;
+}
+
+.product__cart--name-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /*justify-content: space-around;*/
+    gap: 8px;
+}
+
+.product__cart--name-price .product__cart--name {
+    font-size: 14px;
+    max-height: 54px;
+    display: -webkit-box;
+    /* Requerido para usar el truncado multilineal */
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    /* Número de líneas visibles */
+    -webkit-box-orient: vertical;
+    /* Orientación en bloque */
+    overflow: hidden;
+    font-weight: 400;
+
+    cursor: pointer;
+}
+
+.product__cart--name-price>.product__cart--name:hover {
+    text-decoration: underline;
+}
+
+.product__cart--amount {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.product__cart--amount button {
+    display: flex;
+    align-items: center;
+    outline: none;
+    border: none;
+    width: 18px;
+    height: 18px;
+    padding: 0 3px;
+    border-radius: 50%;
+
+    cursor: pointer;
+}
+
+.product__cart--super-logo {
+    max-width: 50px;
+    max-height: 30px;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 30;
+    object-fit: contain;
+}
+
+@media (width < 435px) {
+    .product__cart {
+        gap: 5px;
+    }
+
+    .product__cart--info .img_product {
+        width: 50px;
+    }
+
+    .cart__product--name-price .product__cart--name {
+        font-size: 12px;
+    }
+}

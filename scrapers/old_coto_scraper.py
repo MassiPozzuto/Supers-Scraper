@@ -56,6 +56,7 @@ def get_coto_products(page = 1, onlyScrapThisPage = False):
     print('Página:', page)
     from_product = (page - 1) * AMOUNT_PRODUCTS
     link = f'https://www.cotodigital3.com.ar/sitios/cdigi/browse?Dy=1&Nf=product.endDate%7CGTEQ+1.7285184E12%7C%7Cproduct.startDate%7CLTEQ+1.7285184E12&No={from_product}&Nr=AND%28product.language%3Aespa%C3%B1ol%2Cproduct.sDisp_200%3A1004%2Cproduct.siteId%3ACotoDigital%2COR%28product.siteId%3ACotoDigital%29%29&Nrpp={AMOUNT_PRODUCTS}&Nty=1&_D%3AidSucursal=+&_D%3AsiteScope=+&atg_store_searchInput=sku00000000&idSucursal=200&siteScope=ok'
+    print(link)
 
     print("Turno del proxy:", PROXIES[proxyIndex])
     r = requests.get(

@@ -52,7 +52,7 @@ def get_dia_categories():
     "extensions": {
        "persistedQuery": {
           "version": 1,
-          "sha256Hash": "2781e77265654ec0e828dbef6ef02f1eaeb97d3d2bca80e7d435e1e7d5213c85", 
+          "sha256Hash": "9baf0d746dc29ce0fb57df35bb425e25dd06b824c8bc88389c0d94d8fc042529", 
           "provider": "diaio.extended-mega-menu@0.x", 
           "sender": "diaio.custom-mega-menu@0.x"
        }
@@ -108,6 +108,7 @@ def get_dia_endpoint(categories, page):
   return f"{URL_BASE}_v/segment/graphql/v1?{query_string}"
 
 def get_dia_products_by_categories(categories, page = 1):
+  print(page)
   endpoint_url = get_dia_endpoint(categories, page)
 
   subcategory_products = []

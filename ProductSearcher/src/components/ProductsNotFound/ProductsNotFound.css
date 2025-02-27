@@ -1,0 +1,15 @@
+.products__not-found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+
+    padding: 20px;
+}
+
+.container__not-found-svg {
+    display: flex;
+    background: #eee;
+    padding: 1rem;
+    border-radius: 50%;
+}

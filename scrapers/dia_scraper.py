@@ -52,7 +52,7 @@ def get_dia_categories():
     "extensions": {
        "persistedQuery": {
           "version": 1,
-          "sha256Hash": "2781e77265654ec0e828dbef6ef02f1eaeb97d3d2bca80e7d435e1e7d5213c85", 
+          "sha256Hash": "9baf0d746dc29ce0fb57df35bb425e25dd06b824c8bc88389c0d94d8fc042529", 
           "provider": "diaio.extended-mega-menu@0.x", 
           "sender": "diaio.custom-mega-menu@0.x"
        }
@@ -81,7 +81,7 @@ def get_dia_categories():
     return None
 
 def get_dia_endpoint(categories, page):
-  new_parameters = json.loads(json.dumps(DEFAULT_VTEX_PARAMETERS)) # Copia profunda
+  new_parameters = json.loads(json.dumps(DEFAULT_VTEX_PARAMETERS)) # Para obtener un nuevo objeto en memoria y no un puntero a DEFAULT_VTEX_PARAMETERS
   new_parameters["extensions"]["variables"]["from"] = CANT_REG_VTEX * (page - 1)
   new_parameters["extensions"]["variables"]["to"] = CANT_REG_VTEX * page - 1
   new_parameters["extensions"]["variables"]["query"] = "/".join(categories)
@@ -108,6 +108,7 @@ def get_dia_endpoint(categories, page):
   return f"{URL_BASE}_v/segment/graphql/v1?{query_string}"
 
 def get_dia_products_by_categories(categories, page = 1):
+  print(page)
   endpoint_url = get_dia_endpoint(categories, page)
 
   subcategory_products = []
@@ -125,12 +126,51 @@ def get_dia_products_by_categories(categories, page = 1):
     if len(product_returned) > 0:
       for product in product_returned:
         ean = product["items"][0]["ean"] if product["items"][0]["ean"] else None
+        
+        list_price = product["items"][0]["sellers"][0]["commertialOffer"]["ListPrice"]
+        selling_price = product["items"][0]["sellers"][0]["commertialOffer"]["Price"]
+
+        restriction = None
+        if product["clusterHighlights"]:
+          for attribute in product["clusterHighlights"]:
+            if attribute["id"] == '632': # Exclusivo Online
+              restriction = attribute["name"]
+
+        offers = []
+        if selling_price != list_price:
+          # Un simple descuento
+          offers.append([None, selling_price, restriction])
+
+        rare_offer = product["items"][0]["sellers"][0]["commertialOffer"]["teasers"]
+        if rare_offer:
+          offer_text = rare_offer[0]["name"]
+
+          regexOffer = r"(\d+).*?(\d+)"
+          match = re.search(regexOffer, offer_text)
+          if match:
+            minimum_quantity = int (match.group(1))
+            second_quantity = float(match.group(2)) if '$' in offer_text else int(match.group(2))
+            
+            if '$' in offer_text:
+              # 2 x $1500, 3 x $4000
+              offer_price = second_quantity / minimum_quantity
+            elif '%' in offer_text:
+              # 2do al 80%, 2do al 50%
+              crucial_number = float(f"{minimum_quantity - 1}.{second_quantity}")
+              offer_price =  list_price * crucial_number / minimum_quantity
+            else:
+              # 2x1, 3x2
+              offer_price = second_quantity * list_price / minimum_quantity
+
+            offers.append([offer_text, offer_price, restriction])
+
         subcategory_products.append([
           ean,
           product["productName"],
-          product["items"][0]["sellers"][0]["commertialOffer"]["Price"],
+          list_price,
           product["items"][0]["images"][0]["imageUrl"],
-          f"{URL_BASE}{product["linkText"]}/p"
+          f"{URL_BASE}{product["linkText"]}/p",
+          offers
         ])
   
   if len(subcategory_products) == CANT_REG_VTEX:
@@ -177,8 +217,27 @@ if __name__ == "__main__":
   )
   cursor = conn.cursor()
   cursor.execute("DELETE FROM product WHERE id_supermarket = 5")
-  insert_query = "INSERT INTO product (id_supermarket, sku, name, price, img_src, link) VALUES (5, %s, %s, %s, %s, %s)"
-  cursor.executemany(insert_query, dia_products)
+  insert_product_query = """
+    INSERT INTO product (id_supermarket, sku, name, price, img_src, link)
+    VALUES (5, %s, %s, %s, %s, %s)
+  """
+  insert_offer_query = """
+    INSERT INTO offer (id_product, text, price, is_restricted)
+    VALUES (%s, %s, %s, %s)
+  """
+
+  for product in dia_products:
+    product_sku, product_name, regular_price, product_img, product_url, offers = product
+
+    # Insertar producto
+    cursor.execute(insert_product_query, (product_sku, product_name, regular_price, product_img, product_url))
+    product_id = cursor.lastrowid  # Obtener el ID del producto insertado
+
+    # Insertar ofertas relacionadas (si existen)
+    for offer in offers:
+      offer_text, offer_price, restriction = offer
+      cursor.execute(insert_offer_query, (product_id, offer_text, offer_price, restriction))
+  
   conn.commit()
 
   cursor.close()

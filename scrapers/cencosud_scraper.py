@@ -11,7 +11,7 @@ from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 
 
 AMOUNT_PRODUCTS = 20
-SUPERMARKET_NAME = 'Vea' # Cambiar según el supermercado cencosud que se quiera scrapear
+SUPERMARKET_NAME = 'vea' # Cambiar según el supermercado cencosud que se quiera scrapear
 
 
 def extract_amount_products(string):
@@ -50,7 +50,7 @@ def get_super_cencosud_categories(driver, url):
   driver.get(url)
 
   # Espero a que aparezca determinada etiqueta <span> para poder obtener el menu. Son dos ya que el de Vea tiene una clase distinta al de Disco y Jumbo
-  WebDriverWait(driver, 10).until (
+  WebDriverWait(driver, 10).until(
     EC.any_of (
       EC.visibility_of_element_located((By.CSS_SELECTOR, 'span.vtex-rich-text-0-x-strong--store-selector-class')), # Para Vea
       EC.visibility_of_element_located((By.CSS_SELECTOR, 'span.vtex-rich-text-0-x-strong--sucursal')) # Para Disco y Jumbo
@@ -130,13 +130,33 @@ def get_cencosud_products(driver, url_base, url_category, page = 1):
     print(f'Productos de la página {page}:', len(products))
     for product in products:
       # No hay SKU
-      product_name = product.find_element(By.CSS_SELECTOR, "h2.vtex-product-summary-2-x-productNameContainer").text
       product_price = product.find_elements(By.CSS_SELECTOR, f".{sender_supermarket}-store-theme-1dCOMij_MzTzZOCohX1K7w")
       product_img = product.find_element(By.CSS_SELECTOR, "img.vtex-product-summary-2-x-image").get_attribute("src")
       product_url = product.find_element(By.XPATH, f"./section/a").get_attribute("href")
+      product_name = product.find_element(By.CSS_SELECTOR, "h2.vtex-product-summary-2-x-productNameContainer").text
       if product_price:
-        formatted_price = priceToNumber(product_price[0].text)
-        products_scraped.append([product_name, formatted_price, product_img, product_url])
+        list_price = priceToNumber(product_price[0].text)
+
+        container_regular_price = product.find_elements(By.CSS_SELECTOR, f".{sender_supermarket}-store-theme-2t-mVsKNpKjmCAEM_AMCQH")
+        offers = []
+        if container_regular_price:
+          selling_price = list_price
+          list_price = priceToNumber(container_regular_price[0].text)
+          
+          rare_offer = product.find_elements(By.CSS_SELECTOR, f".{sender_supermarket}-store-theme-14k7D0cUQ_45k_MeZ_yfFo")
+          offer_text = None
+          
+          if rare_offer:
+            # Oferta rara = 2x1, 3x2, 4x3, 2do al 50%, etc.
+            container_offer_text = WebDriverWait(product, 25).until(
+              EC.visibility_of_element_located((By.XPATH, f".//div[contains(@class, 'vtex-flex-layout-0-x-flexColChild')]/div/span/div[2]"))
+            ) # Este item nos podria servir para ambos y podria analizarlo antes, pero tarda demasiado en aparecer, por eso, solo lo hago en los necesarios
+            offer_text = container_offer_text.text
+          
+          offers.append([offer_text, selling_price, None])
+          #print(offers) 
+        
+        products_scraped.append([product_name, list_price, product_img, product_url, offers])
 
     if len(products) == AMOUNT_PRODUCTS:
       more_products_scraped = get_cencosud_products(driver, url_base, url_category, page + 1)
@@ -186,8 +206,29 @@ if __name__ == '__main__':
 
   # Elimino todos los registros de este supermercado en la base de datos y posteriori, agrego todos los productos scrapeados
   cursor.execute(f"DELETE FROM product WHERE id_supermarket = {supermarket_id}")
-  insert_query = f"INSERT INTO product (id_supermarket, name, price, img_src, link) VALUES ({supermarket_id}, %s, %s, %s, %s)"
-  cursor.executemany(insert_query, supermarket_products)
+
+  insert_product_query = """
+    INSERT INTO product (id_supermarket, name, price, img_src, link)
+    VALUES (%s, %s, %s, %s, %s)
+  """
+  insert_offer_query = """
+    INSERT INTO offer (id_product, text, price, is_restricted)
+    VALUES (%s, %s, %s, %s)
+  """
+
+  for product in supermarket_products:
+    product_name, regular_price, product_img, product_url, offers = product
+
+    # Insertar producto
+    cursor.execute(insert_product_query, (supermarket_id, product_name, regular_price, product_img, product_url))
+    product_id = cursor.lastrowid  # Obtener el ID del producto insertado
+
+    # Insertar ofertas relacionadas (si existen)
+    if offers:
+      for offer in offers:
+        offer_text, offer_price, is_restricted = offer
+        cursor.execute(insert_offer_query, (product_id, offer_text, offer_price, is_restricted))
+
   conn.commit()
 
   cursor.close()

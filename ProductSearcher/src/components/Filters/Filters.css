@@ -1,0 +1,65 @@
+.search__filters {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 16px;
+}
+
+.search__filters--sort {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+}
+
+.search__filters--sort span {
+    text-align: right;
+}
+
+.search__filters--sort select {
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 20px;
+    outline: none;
+
+    cursor: pointer;
+}
+
+.search__filters--sort-text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+@media (width < 560px) {
+    .search__filters--sort-text span {
+        display: none;
+    }
+}
+
+.search__filters--items {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 10px;
+    margin-left: 10px;
+}
+
+.search__filters--offers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search__filters--offers>label {
+    cursor: pointer;
+    user-select: none;
+    /* Para que no moleste al clickarlo */
+}
+
+.search__filters--offers>input {
+    cursor: pointer;
+}

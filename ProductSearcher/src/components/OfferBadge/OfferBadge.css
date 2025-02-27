@@ -1,0 +1,31 @@
+.offer-span {
+    width: fit-content;
+    font-weight: 400;
+    font-size: 13px;
+    padding: 3px 10px !important;
+    border: 1px solid transparent;
+    border-radius: 1rem;
+    background: red;
+    color: white;
+}
+
+.offer-span {
+    font-size: 12px;
+    padding: 1px 8px !important;
+}
+
+
+.offer-is-restricted {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    cursor: pointer;
+    outline: none;
+}
+
+.offer-is-restricted.deactivated {
+    border-color: red;
+    background: white;
+    color: red;
+}

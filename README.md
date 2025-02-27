@@ -1,58 +1,90 @@
 # Supers-Scraper
 
-Este proyecto consta de tres partes.
+Este proyecto consta de tres partes principales:
 
-#### Scrapers
-Tres scripts de python de los cuales se utilizan para extraer datos de productos de los supermercados Coto, Dia y Cencosud (Jumbo, Disco, Vea). Todos guardan los datos en una misma base de datos MySQL.
+### Scrapers
+Tres scripts en Python utilizados para extraer datos de productos de los supermercados Coto, Día y Cencosud (Jumbo, Disco, Vea). Todos almacenan los datos en una base de datos MySQL.
 
-#### API
-Hecha en python, utilizando FastAPI, su función es devolver los datos recolectados por los scrapers y solicitados por la pagina.
+### API
+Desarrollada en Python con FastAPI, su función es devolver los datos recopilados por los scrapers en respuesta a las solicitudes de la página web.
 
-#### Página
-Es un simple frontend que utiliza HTML, CSS y JavaScript. El usuario realiza determinada busqueda y se le devolverá los productos que matcheen con la misma.
+### Página Web
+Desarrollada en React, permite a los usuarios buscar productos y recibir resultados coincidentes con su consulta.
 
 ## Requisitos
 
-Para poder correr este proyecto, antes, necesitás: 
+Para ejecutar este proyecto, necesitas:
 
 - Tener instalado [Python](https://www.python.org/downloads/).
-- Tener instalado [Node](https://nodejs.org/en/download/package-manager).
+- Tener instalado [Node.js](https://nodejs.org/en/download/package-manager).
 - Tener instalado [MySQL](https://dev.mysql.com/downloads/mysql/).
 
 ## Modo de uso - Scrapers
 
-Es necesario tener una copia de la BD. Obviamente, en los archivos deberán configurar la parte de la conexión con MySQL con los datos que correspondan (host, user, pass y database). 
+Es necesario contar con una copia de la base de datos. Además, en los archivos correspondientes, debes configurar la conexión con MySQL (host, usuario, contraseña y base de datos).
 
-También tendrán que instalar todas las librerias mencionadas en `scrapers/requirements.txt` para que pueda funcionar.
+También debes instalar todas las librerías mencionadas en `scrapers/requirements.txt` para que el sistema funcione correctamente.
 
-### Scraper de Coto
+### Antiguo Scraper de Coto
 
-Para extraer los datos de coto utilizo las librerias requests y lxml.
+Para extraer los datos de Coto, este script utiliza las librerías `requests` y `lxml`.
 
-Para que este script funcione, hay un paso más. Deberán crear el archivo `proxies.txt`, en este tendrán que colocar todos los proxies que vayan a utilizar (uno por linea), pueden ser SOCKS o HTTP, en el formato: `<Protocol>://<user>:<pass>@<ip>:<port>`. ¿Por qué proxies? Son necesarios ya que este supermercado bloquea nuestra IP si realizamos muchas consultas desde la misma en poco tiempo. En mi caso utilizo 5 proxies (sumado mi IP) y, para que funcione, entre cada consulta hay un sleep de 120 segundos; si tienen más proxies o un proxy que rote sus IPs, este número variará, es cuestión de probar.
+Para que funcione, es necesario crear un archivo `proxies.txt`, donde se listarán los proxies a utilizar (uno por línea). Pueden ser SOCKS o HTTP, en el formato:
 
-Con esto listo, podrán ejecutar el script y al cabo de cierto tiempo habrán obtenido y guardado en la BD todos los productos de Coto.
+```
+<Protocol>://<user>:<pass>@<ip>:<port>
+```
+
+¿Por qué usar proxies? Coto bloquea las IPs que realizan muchas solicitudes en poco tiempo. En mi caso, utilizo cinco proxies más mi IP, con un tiempo de espera de 120 segundos entre consultas. Si tienes más proxies o un proxy con IP rotativa, este número puede ajustarse.
+
+Una vez configurado, puedes ejecutar el script y, tras un tiempo, todos los productos de Coto estarán almacenados en la base de datos.
+
+### Nuevo Scraper de Coto
+
+A diferencia del antiguo, este scraper obtiene los datos de la nueva versión del sitio de Coto utilizando la URL estándar, pero agregando el parámetro `format=json`. Esto devuelve la información en formato JSON, que luego se procesa para extraer los datos relevantes.
+
+No es necesario utilizar proxies, ya que, hasta la fecha (26/02/2025), este nuevo sitio no bloquea IPs.
 
 ### Scraper de Cencosud
 
-En este scraper, los datos los obtenemos con la libreria selenium. Primero, abrirá una ventana de Chrome en la página del supermercado cencosud y extraerá todas sus categorias, para luego, a partir de ellas, recorrer cada una y obtener sus productos. Finalmente, lo obtenido se guarda en la BD.
+Este scraper utiliza la librería `selenium`. Primero, abre una ventana de Chrome en la página del supermercado Cencosud y extrae todas sus categorías. Luego, recorre cada una de ellas para obtener los productos y los guarda en la base de datos.
 
-Antes de ejecutarlo, deberán definir el supermercado cencosud a scrapear (Vea, Jumbo o Disco) en `SUPERMARKET_NAME`.
+Antes de ejecutarlo, debes definir el supermercado de Cencosud a scrapear (Vea, Jumbo o Disco) en `SUPERMARKET_NAME`.
 
-### Scraper de Dia
+### Scraper de Día
 
-La obtención de los datos de los productos de Dia, se realiza a través de los endpoints de [VTEX](https://vtex.com/es-ar/) que utiliza el propio supermercado en su página. En primer lugar se recuperan las categorias que usa el super para luego conseguir los productos a través de estas.
+Para obtener los datos de los productos de Día, se utilizan los endpoints de [VTEX](https://vtex.com/es-ar/), la plataforma en la que está basada la web del supermercado.
 
-No necesitan modificar nada, simplemente ejecutarlo y esperar.
+Primero, se recuperan las categorías del sitio y luego se extraen los productos de cada una de ellas.
 
-## Modo de uso - Api
+No es necesario modificar nada, simplemente ejecuta el script y espera a que finalice el proceso.
 
-Para la api, como ya comenté, use [FastAPI](https://fastapi.tiangolo.com/). Evidentemente, antes de poder ejecutarla tendrán que instalar las librerias de `api/requirements.txt`, para esto es recomendable [crear un entorno virtual](https://docs.python.org/es/3/tutorial/venv.html). 
+## Modo de uso - API
 
-Ingresando el comando `fastapi dev main.py` en la terminal, se iniciará el programa y comenzará a escuchar las solicitudes.
+La API fue desarrollada con [FastAPI](https://fastapi.tiangolo.com/). Antes de ejecutarla, instala las librerías requeridas en `api/requirements.txt`. Se recomienda [crear un entorno virtual](https://docs.python.org/es/3/tutorial/venv.html) para aislar las dependencias.
 
-## Modo de uso - Página
+Para iniciar la API, ejecuta en la terminal:
 
-Antes que nada, deben ejecutar, en la terminal, el comando `npm install` seguido del comando `npm start` o `http-server`. Claramente, la página necesitará de la api para poder funcionar correctamente.
+```
+fastapi dev main.py
+```
 
-Ya en la página, podrán buscar el producto que se les plazca. Tienen la posibilidad de ordenarlo por su nombre o por su precio. Además, ésta cuenta con un carrito en donde podrán armar una especie de lista de los productos que más les interese.
+Esto levantará el servidor y comenzará a procesar solicitudes.
+
+## Modo de uso - Página Web
+
+La aplicación se encuentra en la carpeta `ProductSearcher`. Para ejecutarla, abre una terminal en dicha carpeta y corre los siguientes comandos:
+
+```
+npm install
+npm run dev
+```
+
+La página web requiere que la API esté en funcionamiento para poder obtener y mostrar la información.
+
+### Funcionalidades de la página
+
+- Permite buscar productos en la base de datos.
+- Posibilidad de ordenar los resultados por nombre o precio.
+- Posibilidad de filtrar los productos por si tienen o no ofertas.
+- Cuenta con un carrito de compras donde los usuarios pueden armar una lista de productos de su interés.

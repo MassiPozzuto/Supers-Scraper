@@ -3,4 +3,3 @@ pydantic==2.8.0
 sqlmodel
 mysqlclient
 mysql-connector-python
-rapidfuzz
